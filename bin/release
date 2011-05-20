@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# bin/release <build-dir>
+
+BUILD_DIR=$1
+
+cat <<EOF
+---
+config_vars:
+  PATH: .play:/usr/local/bin:/usr/bin:/bin
+  PRODUCTION: true
+EOF

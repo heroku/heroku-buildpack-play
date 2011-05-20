@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+# fail fast
+set -e
+
+# parse args
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+# chdir as maven expects
+cd $BUILD_DIR
+
+# unpack cache
+for DIR in ".play"; do
+  rm -rf $DIR
+  if [ -d $CACHE_DIR/$DIR ]; then
+    cp -r $CACHE_DIR/$DIR $DIR
+  fi
+done
+
+# install play with base repository
+PLAY_URL="http://s3.amazonaws.com/lang-pack-play/play-1.2.1.tar.gz"
+
+if [ ! -d .play ]; then
+  echo -n "-----> Installing play!....."
+  curl --silent --max-time 60 --location $PLAY_URL | tar xz
+  chmod +x .play/play
+  echo " done"
+fi
+
+# build app
+echo "-----> Resolving dependencies and precompiling play! app..."
+.play/play precompile --deps 2>&1 | sed -u 's/^/       /'
+if [ "${PIPESTATUS[*]}" != "0 0" ]; then
+  echo " !     Failed to build Play app"
+  exit 1
+fi
+
+# repack cache
+mkdir -p $CACHE_DIR
+for DIR in ".play"; do
+  rm -rf $CACHE_DIR/$DIR
+  cp -r $DIR $CACHE_DIR/$DIR
+done
