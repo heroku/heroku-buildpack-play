@@ -7,5 +7,6 @@ cat <<EOF
 ---
 config_vars:
   PATH: .play:/usr/local/bin:/usr/bin:/bin
-  DATABASE_JDBC_URL: $DATABASE_URL
+  TESTING: $DATABASE_URL
+  TESTING2: MyENV
 EOF
