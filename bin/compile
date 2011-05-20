@@ -29,6 +29,8 @@ if [ ! -d .play ]; then
   echo " done"
 fi
 
+echo "hello() { echo 'hi there' }" > .bashrc
+
 # build app
 echo "-----> Resolving dependencies and precompiling play! app..."
 .play/play precompile --deps 2>&1 | sed -u 's/^/       /'
