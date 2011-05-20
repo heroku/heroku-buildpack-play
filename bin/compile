@@ -31,7 +31,7 @@ fi
 
 # build app
 echo "-----> Resolving dependencies and precompiling play! app..."
-.play/play dependencies 2>&1 | sed -u 's/^/       /'
+.play/play precompile --deps 2>&1 | sed -u 's/^/       /'
 if [ "${PIPESTATUS[*]}" != "0 0" ]; then
   echo " !     Failed to build Play app"
   exit 1
