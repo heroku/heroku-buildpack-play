@@ -39,7 +39,7 @@ fi
 
 if [ ! -f Procfile ]; then
   cat <<EOF > Procfile
-web:    play run --%heroku --http.port=$PORT -Xmx512m -Ddatabase.url=`jdbcify $DATABASE_URL`
+web:    play run --%heroku --http.port=\$PORT -Xmx512m -Ddatabase.url=`jdbcify \$DATABASE_URL`
 EOF
   echo "No Procfile found. Will use Procfile: "
   cat Procfile | sed -u 's/^/       /' 
