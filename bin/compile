@@ -19,6 +19,14 @@ for DIR in ".play"; do
   fi
 done
 
+# add jdbc converter tool
+
+mkdir .tools
+cat <<EOF > .tools/jdbcify
+echo $1 | sed "s|postgres://\([^:][^:]*\):\([^@]*\)@\([^\/]*\)/\([^$]*\)|jdbc:postgresql://\3/\4?user=\1\&password=\2|"
+EOF
+chmod +x .tools/jdbcify
+
 # install play with base repository
 PLAY_URL="http://s3.amazonaws.com/lang-pack-play/play-1.2.1.tar.gz"
 
@@ -28,6 +36,22 @@ if [ ! -d .play ]; then
   chmod +x .play/play
   echo " done"
 fi
+
+if [ ! -f Procfile ]; then
+  cat <<EOF > Procfile
+web:    play run --%heroku --http.port=$PORT -Xmx512m -Ddatabase.url=`jdbcify $DATABASE_URL`
+EOF
+  echo "No Procfile found. Will use Procfile: "
+  cat Procfile | sed -u 's/^/       /' 
+fi
+
+cat <<EOF >> conf/application.conf
+%heroku.application.mode=prod
+%heroku.db.url=${database.url}
+%heroku.db.driver=org.postgresql.Driver
+%heroku.jpa.ddl=update
+EOF
+
 
 # build app
 echo "-----> Resolving dependencies and precompiling play! app..."
@@ -39,7 +63,7 @@ fi
 
 # repack cache
 mkdir -p $CACHE_DIR
-for DIR in ".play"; do
+for DIR in ".play" ".tools"; do
   rm -rf $CACHE_DIR/$DIR
   cp -r $DIR $CACHE_DIR/$DIR
 done

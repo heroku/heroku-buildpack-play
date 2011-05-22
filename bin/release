@@ -6,6 +6,5 @@ BUILD_DIR=$1
 cat <<EOF
 ---
 config_vars:
-  PATH: .play:/usr/local/bin:/usr/bin:/bin
-  TESTING2: MyENV
+  PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
 EOF
