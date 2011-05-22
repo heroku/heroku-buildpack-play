@@ -47,7 +47,7 @@ fi
 
 cat <<EOF >> conf/application.conf
 %heroku.application.mode=prod
-%heroku.db.url=${database.url}
+%heroku.db.url=\${database.url}
 %heroku.db.driver=org.postgresql.Driver
 %heroku.jpa.ddl=update
 EOF
