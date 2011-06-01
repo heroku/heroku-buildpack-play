@@ -12,7 +12,7 @@ CACHE_DIR=$2
 cd $BUILD_DIR
 
 # unpack cache
-for DIR in ".play"; do
+for DIR in ".play" ".lib"; do
   rm -rf $DIR
   if [ -d $CACHE_DIR/$DIR ]; then
     cp -r $CACHE_DIR/$DIR $DIR
@@ -33,7 +33,7 @@ if [ ! -f Procfile ]; then
   cat <<EOF > Procfile
 web:    play run --http.port=\$PORT
 EOF
-  echo "No Procfile found. Will use Procfile: "
+  echo "-----> No Procfile found. Will use Procfile: "
   cat Procfile | sed -u 's/^/       /' 
 fi
 
@@ -41,22 +41,22 @@ fi
 
 if ! grep -q -E '^([^#]*)%prod\.db\.url' conf/application.conf ; then
     echo "%prod.db.url=\${database.jdbc.url}" >> conf/application.conf
-    echo "      No %prod.db.url parameter found in conf/application.conf. Adding parameter:"
-    echo "      %prod.db.url=\${database.jdbc.url}"
+    echo "-----> No %prod.db.url parameter found in conf/application.conf. Adding parameter:"
+    echo "       %prod.db.url=\${database.jdbc.url}"
 fi
 
 # Append a db driver prod parameter to application.conf if it's not already there
 
 if ! grep -q -E '^([^#]*)%prod\.db\.driver' conf/application.conf ; then
     echo "%prod.db.driver=org.postgresql.Driver" >> conf/application.conf
-    echo "      No %prod.db.driver parameter found in conf/application.conf. Adding parameter:"
-    echo "      %prod.db.driver=org.postgresql.Driver"
+    echo "-----> No %prod.db.driver parameter found in conf/application.conf. Adding parameter:"
+    echo "       %prod.db.driver=org.postgresql.Driver"
     if [ ! -e lib/postgres* ] ; then 
         if [ ! -e lib ] ; then
             mkdir lib
         fi
         cp .lib/postgres*.jar lib/.
-        echo "      Added postgres JDBC driver lib to application: `ls lib | grep postgres`"
+        echo "        Added postgres JDBC driver lib to application: `ls lib | grep postgres`"
     fi
 fi
 
@@ -64,8 +64,8 @@ fi
 
 if ! grep -q -E '^([^#]*)%prod\.jpa\.ddl' conf/application.conf ; then
     echo "%prod.jpa.ddl=update" >> conf/application.conf
-    echo "      No %prod.jpa.ddl parameter found in conf/application.conf. Adding parameter:"
-    echo "      %prod.jpa.ddl=update"
+    echo "-----> No %prod.jpa.ddl parameter found in conf/application.conf. Adding parameter:"
+    echo "       %prod.jpa.ddl=update"
 fi
 
 
