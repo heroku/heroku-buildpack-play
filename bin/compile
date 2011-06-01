@@ -52,6 +52,9 @@ if ! grep -q -E '^([^#]*)%prod\.db\.driver' conf/application.conf ; then
     echo "      No %prod.db.driver parameter found in conf/application.conf. Adding parameter:"
     echo "      %prod.db.driver=org.postgresql.Driver"
     if [ ! -e lib/postgres* ] ; then 
+        if [ ! -e lib ] ; then
+            mkdir lib
+        fi
         cp .lib/postgres*.jar lib/.
         echo "      Added postgres JDBC driver lib to application: `ls lib | grep postgres`"
     fi
