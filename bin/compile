@@ -51,6 +51,10 @@ if ! grep -q -E '^([^#]*)%prod\.db\.driver' conf/application.conf ; then
     echo "%prod.db.driver=org.postgresql.Driver" >> conf/application.conf
     echo "      No %prod.db.driver parameter found in conf/application.conf. Adding parameter:"
     echo "      %prod.db.driver=org.postgresql.Driver"
+    if [ ! -e lib/postgres* ] ; then 
+        cp .lib/postgres*.jar lib/.
+        echo "      Added postgres JDBC driver lib to application: `ls lib | grep postgres`"
+    fi
 fi
 
 # Append a hibernate ddl strategy parameter to application.conf if it's not already there
