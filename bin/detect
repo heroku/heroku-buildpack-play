@@ -3,6 +3,8 @@
 
 if [ -f $1/conf/application.conf ]; then
   echo "play" && exit 0
+elif [ -f $1/Procfile ] && grep -q 'play run' $1/Procfile; then
+  echo "play" && exit 0
 else
   echo "no" && exit 1
 fi
