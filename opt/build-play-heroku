@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# Build Play! framework
+/usr/bin/ant -buildfile $PLAY_HOME/framework/build.xml
+
+# Build Postgres JDBC driver
+/usr/bin/ant -buildfile $PGJDBC_HOME/build.xml clean all
+
+# Clean old tarball
+rm -fr build/play-heroku.tar.gz
+
+# Create tmp space for tar'ing
+mkdir -p tmp/.play
+mkdir -p tmp/.lib
+
+# Add Play! framework
+cp -r $PLAY_HOME/* tmp/.play
+rm -fr tmp/.play/documentation/
+rm -fr tmp/.play/nbproject/
+rm -fr tmp/.play/python/
+rm -fr tmp/.play/resources/
+rm -fr tmp/.play/samples-and-tests/
+rm -fr tmp/.play/support/
+
+# Add Postgres JDBC driver
+cp -r $PGJDBC_HOME/jars/* tmp/.lib
+
+# Run tar and remove tmp space
+if [ ! -d build ]; then
+  mkdir build
+fi
+
+tar cvzf build/play-heroku.tar.gz -C tmp/ .play .lib
+rm -fr tmp/
