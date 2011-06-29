@@ -17,11 +17,20 @@ for DIR in ".play" ".lib"; do
 done
 
 # install play with base repository
-PLAY_URL="http://s3.amazonaws.com/lang-pack-play/play-1.2.1.tar.gz"
+PLAY_URL="https://s3-us-west-1.amazonaws.com/language-pack-play/play-heroku.tar.gz"
+
+check_compile_status()
+{
+  if [ "${PIPESTATUS[*]}" != "0 0" ]; then
+    echo " !     Failed to build Play! application"
+    exit 1
+  fi
+}
 
 if [ ! -d .play ]; then
   echo -n "-----> Installing play!....."
   curl --silent --max-time 60 --location $PLAY_URL | tar xz
+  check_compile_status
   chmod +x .play/play
   echo " done"
 fi
@@ -34,14 +43,6 @@ EOF
   cat Procfile | sed -u 's/^/       /' 
 fi
 
-check_build_status()
-{
-  if [ "${PIPESTATUS[*]}" != "0 0" ]; then
-    echo " !     Failed to build Play! application"
-    exit 1
-  fi
-}
-
 # build app
 echo "-----> Building Play! application..."
 CMD_SUFFIX=" 2>&1" # Redirect error output
@@ -51,7 +52,7 @@ cat $BUILD_DIR/Procfile | while read line; do
   DEPENDENCIES_CMD=$(echo $line | grep -E -o 'play run .*' | sed 's/play run/.play\/play dependencies/')$CMD_SUFFIX
   echo "       Resolving dependencies: $DEPENDENCIES_CMD" 
   eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
-  check_build_status
+  check_compile_status
 done
 
 # repack cache
