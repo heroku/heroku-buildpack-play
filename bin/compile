@@ -27,13 +27,14 @@ check_compile_status()
   fi
 }
 
-if [ ! -d .play ]; then
+#if [ ! -d .play ]; then
+  rm -rf .play
   echo -n "-----> Installing play!....."
   curl --silent --max-time 90 --location $PLAY_URL | tar xz
   check_compile_status
   chmod +x .play/play
   echo " done"
-fi
+#fi
 
 if [ ! -f Procfile ]; then
   cat <<EOF > Procfile
