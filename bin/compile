@@ -45,13 +45,12 @@ fi
 
 # build app
 echo "-----> Building Play! application..."
-CMD_SUFFIX=" 2>&1" # Redirect error output
-# For each 'play run' command in the Procfile, run 'play dependencies'
-cat $BUILD_DIR/Procfile | while read line; do
-  # Strip the process name and replace 'run' command with 'dependencies' command
-  DEPENDENCIES_CMD=$(echo $line | grep -E -o 'play run .*' | sed 's/play run/.play\/play dependencies/')$CMD_SUFFIX
-  echo "       Resolving dependencies: $DEPENDENCIES_CMD" 
-  eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
+# precompile each application represented by an application.conf file
+for DIR in $(find -wholename "*/conf/application.conf" ! -wholename "*modules*" -type f | sed 's/conf\/application.conf//')
+do
+  PRECOMPILE_CMD=".play/play precompile $DIR --deps 2>&1"
+  echo "       Resolving dependencies and precompiling: $PRECOMPILE_CMD" 
+  eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
   check_compile_status
 done
 
