@@ -1,39 +1,64 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
 
-# parse args
+# Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
 
-# chdir to handle relative paths
+# Change dir to handle relative paths
 cd $BUILD_DIR
 
-# unpack cache
-for DIR in ".play" ".lib"; do
+# Unpack cache
+for DIR in ".play"; do
   rm -rf $DIR
   if [ -d $CACHE_DIR/$DIR ]; then
     cp -r $CACHE_DIR/$DIR $DIR
   fi
 done
 
-# install play with base repository
-PLAY_URL="https://s3-us-west-1.amazonaws.com/language-pack-play/play-heroku.tar.gz"
+fail_compile()
+{
+  echo " !     Failed to build Play! application"
+  exit 1
+}
 
 check_compile_status()
 {
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
-    echo " !     Failed to build Play! application"
-    exit 1
+    fail_compile
   fi
 }
 
-if [ ! -d .play ]; then
-  echo -n "-----> Installing play!....."
+# Find Play! framework
+PLAY_PATH=$(find -maxdepth 1 -name "play*" -type d)
+if [ -z "$PLAY_PATH" ]; then
+  echo "-----> No custom play framework found. Using standard distribution"
+  PLAY_PATH=".play"
+elif [ $(echo $PLAY_PATH | wc -w) -gt 1 ]; then
+  echo " !     Found ambiguous Play! framework so do not know which to use"
+  echo " !     Possible Play! frameworks found at:"
+  echo "$PLAY_PATH" | sed -u 's/^/ !       /'
+  fail_compile
+elif [ ! -f $PLAY_PATH/play ]; then
+  echo " !     Trying to use Play! framework found at $PLAY_PATH but this framework is invalid (checked for file $PLAY_PATH/play)"
+  echo " !     Please correct this Play! framework or if not meant as a Play! framework then rename the directory"
+  fail_compile
+else
+  echo "-----> Using Play! framework found at $PLAY_PATH"
+fi
+
+# If no framework is found then install Play!
+if [ ! -d $PLAY_PATH ]; then
+  PLAY_URL="https://s3-us-west-1.amazonaws.com/language-pack-play/play-heroku.tar.gz"
+
+  echo -n "-----> Installing Play!....."
   curl --silent --max-time 90 --location $PLAY_URL | tar xz
   check_compile_status
-  chmod +x .play/play
   echo " done"
 fi
+
+# Ensure play file is executable
+chmod +x $PLAY_PATH/play
 
 if [ ! -f Procfile ]; then
   cat <<EOF > Procfile
@@ -43,20 +68,23 @@ EOF
   cat Procfile | sed -u 's/^/       /' 
 fi
 
-# build app
+# Build app
 echo "-----> Building Play! application..."
-# precompile each application represented by an application.conf file
-for DIR in $(find -wholename "*/conf/application.conf" ! -wholename "*modules*" -type f | sed 's/conf\/application.conf//')
+# Precompile each application represented by an application.conf file
+# (Do not precompile copied modules or anything found in the Play! framework)
+for DIR in $(find -wholename "*/conf/application.conf" ! -wholename "*modules*" ! -wholename "$PLAY_PATH*" -type f | sed 's/conf\/application.conf//')
 do
-  PRECOMPILE_CMD=".play/play precompile $DIR --deps 2>&1"
+  PRECOMPILE_CMD="$PLAY_PATH/play precompile $DIR --deps 2>&1"
   echo "       Resolving dependencies and precompiling: $PRECOMPILE_CMD" 
   eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
   check_compile_status
 done
 
-# repack cache
+# Repack cache
 mkdir -p $CACHE_DIR
 for DIR in ".play"; do
   rm -rf $CACHE_DIR/$DIR
-  cp -r $DIR $CACHE_DIR/$DIR
+  if [ -d $DIR ]; then
+    cp -r $DIR $CACHE_DIR/$DIR
+  fi
 done
