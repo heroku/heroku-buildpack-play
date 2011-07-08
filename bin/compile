@@ -93,7 +93,7 @@ done
 # Repack modules into cache
 # (Skip modules within modules [these will be repacked anyway], modules in the Play! framework
 #  and modules in the cache)
-for DIR in $(find -name "modules" ! -wholename "*modules*modules" ! -wholename "*$PLAY_PATH*" ! -wholename "$CACHE_DIR*" -type d)
+for DIR in $(find -name "modules" ! -wholename "*modules*modules" ! -wholename "*$PLAY_PATH*" ! -wholename "*$CACHE_DIR*" -type d)
 do
   echo "-----> Repacking modules into cache: $DIR"
   mkdir -p $CACHE_DIR/$DIR
@@ -104,7 +104,7 @@ done
 # Repack libs into cache
 # (Skip libs within modules [these will be repacked anyway], libs in the Play! framework
 #  and libs in the cache)
-for DIR in $(find -name "lib" ! -wholename "*modules*lib" ! -wholename "*$PLAY_PATH*" ! -wholename "$CACHE_DIR*" -type d)
+for DIR in $(find -name "lib" ! -wholename "*modules*lib" ! -wholename "*$PLAY_PATH*" ! -wholename "*$CACHE_DIR*" -type d)
 do
   echo "-----> Repacking libs into cache: $DIR"
   mkdir -p $CACHE_DIR/$DIR
