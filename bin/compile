@@ -62,7 +62,7 @@ do
   eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
   check_compile_status
 
-  PRECOMPILE_CMD="$PLAY_PATH/play precompile $DIR --deps 2>&1"
+  PRECOMPILE_CMD="$PLAY_PATH/play precompile $DIR 2>&1"
   echo "       Precompiling: $PRECOMPILE_CMD" 
   eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
   check_compile_status
