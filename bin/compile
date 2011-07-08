@@ -4,38 +4,20 @@
 # Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
+
 PLAY_PATH=".play"
+IVY_PATH=".ivy2"
 
 # Change dir to handle relative paths
 cd $BUILD_DIR
 
-# Unpack Play! framework from cache
-for DIR in $PLAY_PATH; do
+# Unpack cache
+for DIR in $PLAY_PATH $IVY_PATH ; do
   rm -rf $DIR
   if [ -d $CACHE_DIR/$DIR ]; then
     cp -r $CACHE_DIR/$DIR $DIR
   fi
 done
-
-if [ -d $CACHE_DIR ]; then
-  # Unpack modules from cache
-  # (Skip modules within modules [these will be unpacked anyway] and modules in the Play! framework)
-  for DIR in $(cd $CACHE_DIR; find -name "modules" ! -wholename "*modules*modules" ! -wholename "*$PLAY_PATH*" -type d)
-  do
-    echo "-----> Unpacking modules from cache: $DIR"
-    rm -rf $DIR
-    cp -r $CACHE_DIR/$DIR $DIR
-  done
-  
-  # Unpack libs from cache
-  # (Skip libs within modules [these will be unpacked anyway] and libs in the Play! framework)
-  for DIR in $(cd $CACHE_DIR; find -name "lib" ! -wholename "*modules*lib" ! -wholename "*$PLAY_PATH*" -type d)
-  do
-    echo "-----> Unpacking libs from cache: $DIR"
-    rm -rf $DIR
-    cp -r $CACHE_DIR/$DIR $DIR
-  done
-fi
 
 fail_compile()
 {
@@ -57,11 +39,9 @@ if [ ! -d $PLAY_PATH ]; then
   echo -n "-----> Installing Play!....."
   curl --silent --max-time 90 --location $PLAY_URL | tar xz
   check_compile_status
+  chmod +x $PLAY_PATH/play
   echo " done"
 fi
-
-# Ensure play file is executable
-chmod +x $PLAY_PATH/play
 
 if [ ! -f Procfile ]; then
   cat <<EOF > Procfile
@@ -85,29 +65,7 @@ done
 
 # Repack Play! framework into cache
 mkdir -p $CACHE_DIR
-for DIR in $PLAY_PATH; do
-  rm -rf $CACHE_DIR/$DIR
-  cp -r $DIR $CACHE_DIR/$DIR
-done
-
-# Repack modules into cache
-# (Skip modules within modules [these will be repacked anyway], modules in the Play! framework
-#  and modules in the cache)
-for DIR in $(find -name "modules" ! -wholename "*modules*modules" ! -wholename "*$PLAY_PATH*" ! -wholename "*$CACHE_DIR*" -type d)
-do
-  echo "-----> Repacking modules into cache: $DIR"
-  mkdir -p $CACHE_DIR/$DIR
-  rm -rf $CACHE_DIR/$DIR
-  cp -r $DIR $CACHE_DIR/$DIR
-done
-
-# Repack libs into cache
-# (Skip libs within modules [these will be repacked anyway], libs in the Play! framework
-#  and libs in the cache)
-for DIR in $(find -name "lib" ! -wholename "*modules*lib" ! -wholename "*$PLAY_PATH*" ! -wholename "*$CACHE_DIR*" -type d)
-do
-  echo "-----> Repacking libs into cache: $DIR"
-  mkdir -p $CACHE_DIR/$DIR
+for DIR in $PLAY_PATH $IVY_PATH ; do
   rm -rf $CACHE_DIR/$DIR
   cp -r $DIR $CACHE_DIR/$DIR
 done
