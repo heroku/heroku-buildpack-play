@@ -12,9 +12,9 @@ cd $BUILD_DIR
 # Unpack cache
 for DIR in $PLAY_PATH; do
   rm -rf $DIR
-#  if [ -d $CACHE_DIR/$DIR ]; then
-#    cp -r $CACHE_DIR/$DIR $DIR
-#  fi
+  if [ -d $CACHE_DIR/$DIR ]; then
+    cp -r $CACHE_DIR/$DIR $DIR
+  fi
 done
 
 fail_compile()
