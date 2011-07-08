@@ -4,12 +4,13 @@
 # Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
+PLAY_PATH=".play"
 
 # Change dir to handle relative paths
 cd $BUILD_DIR
 
 # Unpack cache
-for DIR in ".play"; do
+for DIR in $PLAY_PATH; do
   rm -rf $DIR
   if [ -d $CACHE_DIR/$DIR ]; then
     cp -r $CACHE_DIR/$DIR $DIR
@@ -29,25 +30,7 @@ check_compile_status()
   fi
 }
 
-# Find Play! framework
-PLAY_PATH=$(find -maxdepth 1 -name "play*" -type d)
-if [ -z "$PLAY_PATH" ]; then
-  echo "-----> No custom play framework found. Using standard distribution"
-  PLAY_PATH=".play"
-elif [ $(echo $PLAY_PATH | wc -w) -gt 1 ]; then
-  echo " !     Found ambiguous Play! framework so do not know which to use"
-  echo " !     Possible Play! frameworks found at:"
-  echo "$PLAY_PATH" | sed -u 's/^/ !       /'
-  fail_compile
-elif [ ! -f $PLAY_PATH/play ]; then
-  echo " !     Trying to use Play! framework found at $PLAY_PATH but this framework is invalid (checked for file $PLAY_PATH/play)"
-  echo " !     Please correct this Play! framework or if not meant as a Play! framework then rename the directory"
-  fail_compile
-else
-  echo "-----> Using Play! framework found at $PLAY_PATH"
-fi
-
-# If no framework is found then install Play!
+# Install Play! if not already
 if [ ! -d $PLAY_PATH ]; then
   PLAY_URL="https://s3-us-west-1.amazonaws.com/language-pack-play/play-heroku.tar.gz"
 
@@ -82,7 +65,7 @@ done
 
 # Repack cache
 mkdir -p $CACHE_DIR
-for DIR in ".play"; do
+for DIR in $PLAY_PATH; do
   rm -rf $CACHE_DIR/$DIR
   if [ -d $DIR ]; then
     cp -r $DIR $CACHE_DIR/$DIR
