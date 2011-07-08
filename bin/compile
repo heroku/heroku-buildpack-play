@@ -17,23 +17,25 @@ for DIR in $PLAY_PATH; do
   fi
 done
 
-# Unpack modules from cache
-# (Skip modules within modules [these will be unpacked anyway] and modules in the Play! framework)
-for DIR in $(cd $CACHE_DIR; find -name "modules" ! -wholename "*modules*modules" ! -wholename "*$PLAY_PATH*" -type d)
-do
-  echo "-----> Unpacking modules from cache: $DIR"
-  rm -rf $DIR
-  cp -r $CACHE_DIR/$DIR $DIR
-done
-
-# Unpack libs from cache
-# (Skip libs within modules [these will be unpacked anyway] and libs in the Play! framework)
-for DIR in $(cd $CACHE_DIR; find -name "lib" ! -wholename "*modules*lib" ! -wholename "*$PLAY_PATH*" -type d)
-do
-  echo "-----> Unpacking libs from cache: $DIR"
-  rm -rf $DIR
-  cp -r $CACHE_DIR/$DIR $DIR
-done
+if [ -d $CACHE_DIR ]; then
+  # Unpack modules from cache
+  # (Skip modules within modules [these will be unpacked anyway] and modules in the Play! framework)
+  for DIR in $(cd $CACHE_DIR; find -name "modules" ! -wholename "*modules*modules" ! -wholename "*$PLAY_PATH*" -type d)
+  do
+    echo "-----> Unpacking modules from cache: $DIR"
+    rm -rf $DIR
+    cp -r $CACHE_DIR/$DIR $DIR
+  done
+  
+  # Unpack libs from cache
+  # (Skip libs within modules [these will be unpacked anyway] and libs in the Play! framework)
+  for DIR in $(cd $CACHE_DIR; find -name "lib" ! -wholename "*modules*lib" ! -wholename "*$PLAY_PATH*" -type d)
+  do
+    echo "-----> Unpacking libs from cache: $DIR"
+    rm -rf $DIR
+    cp -r $CACHE_DIR/$DIR $DIR
+  done
+fi
 
 fail_compile()
 {
