@@ -37,7 +37,7 @@ if [ ! -d $PLAY_PATH ]; then
   PLAY_URL="https://s3-us-west-1.amazonaws.com/language-pack-play/play-heroku.tar.gz"
 
   echo -n "-----> Installing Play!....."
-  curl --silent --max-time 90 --location $PLAY_URL | tar xz
+  curl --silent --max-time 150 --location $PLAY_URL | tar xz
   check_compile_status
   chmod +x $PLAY_PATH/play
   echo " done"
