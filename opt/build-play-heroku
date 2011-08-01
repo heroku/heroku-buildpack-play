@@ -12,9 +12,7 @@ mkdir -p tmp/.play
 # Add Play! framework
 cp -r $PLAY_HOME/* tmp/.play
 rm -fr tmp/.play/documentation/
-rm -fr tmp/.play/nbproject/
 rm -fr tmp/.play/python/
-rm -fr tmp/.play/resources/
 rm -fr tmp/.play/samples-and-tests/
 rm -fr tmp/.play/support/
 
