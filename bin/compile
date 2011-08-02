@@ -53,20 +53,25 @@ fi
 
 # Build app
 echo "-----> Building Play! application..."
+NUM_CONF=0
 # Precompile each application represented by an application.conf file
 # (Do not precompile copied modules or anything found in the Play! framework)
-for DIR in $(find -wholename "*/conf/application.conf" ! -wholename "*modules*" ! -wholename "$PLAY_PATH*" -type f | sed 's/conf\/application.conf//')
+for DIR in $(find -wholename "*/conf/application.conf" ! -wholename "*modules*" ! -wholename "*$PLAY_PATH*" -type f | sed 's/conf\/application.conf//')
 do
-  DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $DIR -Duser.home=$BUILD_DIR 2>&1"
+  let NUM_CONF=NUM_CONF+1
+  [[ $NUM_CONF -gt 1 ]] && PLAY_SILENT_MODE="--silent" || PLAY_SILENT_MODE=""
+
+  DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $DIR $PLAY_SILENT_MODE -Duser.home=$BUILD_DIR 2>&1"
   echo "       Resolving dependencies: $DEPENDENCIES_CMD"
   eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
   check_compile_status
 
-  PRECOMPILE_CMD="$PLAY_PATH/play precompile $DIR 2>&1"
+  PRECOMPILE_CMD="$PLAY_PATH/play precompile $DIR --silent 2>&1"
   echo "       Precompiling: $PRECOMPILE_CMD" 
   eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
   check_compile_status
 done
+echo "-----> Built $NUM_CONF Play! configuration(s)."
 
 # Repack Play! framework into cache
 mkdir -p $CACHE_DIR
