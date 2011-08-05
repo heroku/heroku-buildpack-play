@@ -19,16 +19,13 @@ for DIR in $PLAY_PATH $IVY_PATH ; do
   fi
 done
 
-fail_compile()
-{
-  echo " !     Failed to build Play! application"
-  exit 1
-}
-
 check_compile_status()
 {
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
-    fail_compile
+    echo " !     Failed to build Play! application"
+    rm -rf $CACHE_DIR/$PLAY_PATH
+    echo " !     Cleared Play! framework from cache"
+    exit 1
   fi
 }
 
