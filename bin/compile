@@ -40,14 +40,6 @@ if [ ! -d $PLAY_PATH ]; then
   echo " done"
 fi
 
-if [ ! -f Procfile ]; then
-  cat <<EOF > Procfile
-web:    play run --http.port=\$PORT
-EOF
-  echo "-----> No Procfile found. Will use Procfile: "
-  cat Procfile | sed -u 's/^/       /' 
-fi
-
 # Build app
 echo "-----> Building Play! application..."
 $PLAY_PATH/play version | sed -u 's/^/       /'
@@ -78,3 +70,8 @@ for DIR in $PLAY_PATH $IVY_PATH ; do
   cp -r $DIR $CACHE_DIR/$DIR
 done
 
+# Warn if no Procfile is present
+if [ ! -f Procfile ]; then
+  echo "-----> No Procfile found. Will use process: "
+  echo "       play run --http.port=\$PORT"
+fi

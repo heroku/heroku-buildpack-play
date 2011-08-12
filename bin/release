@@ -8,3 +8,10 @@ cat <<EOF
 config_vars:
   PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
 EOF
+
+if [ ! -f $BUILD_DIR/Procfile ]; then
+cat <<EOF
+default_process_types:
+  web:    play run --http.port=\$PORT
+EOF
+fi
