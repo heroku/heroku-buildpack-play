@@ -7,14 +7,23 @@
 rm -fr build/play-heroku.tar.gz
 
 # Create tmp space for tar'ing
-mkdir -p tmp/.play
+mkdir -p tmp/.play/framework/src/play
 
 # Add Play! framework
-cp -r $PLAY_HOME/* tmp/.play
-rm -fr tmp/.play/documentation/
-rm -fr tmp/.play/python/
-rm -fr tmp/.play/samples-and-tests/
-rm -fr tmp/.play/support/
+cp -r $PLAY_HOME/framework/dependencies.yml tmp/.play/framework
+cp -r $PLAY_HOME/framework/lib/             tmp/.play/framework
+cp -r $PLAY_HOME/framework/play*.jar        tmp/.play/framework
+cp -r $PLAY_HOME/framework/pym/             tmp/.play/framework
+cp -r $PLAY_HOME/framework/src/play/version tmp/.play/framework/src/play
+cp -r $PLAY_HOME/framework/templates/       tmp/.play/framework
+
+# Add Play! core modules (minus testrunner)
+cp -r $PLAY_HOME/modules            tmp/.play
+rm -fr tmp/.play/modules/testrunner
+
+# Add Play! Linux executable
+cp -r $PLAY_HOME/play               tmp/.play
+
 
 # Run tar and remove tmp space
 if [ ! -d build ]; then
