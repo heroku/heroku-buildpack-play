@@ -1,9 +1,23 @@
 #!/usr/bin/env bash
 
+BUILD_DIR=$PWD
+PLAY_BRANCH=1.2.x
+PLAY_TAG=HEAD
+
 # Build Play! framework
-/usr/bin/ant -buildfile $PLAY_HOME/framework/build.xml
+cd $PLAY_HOME
+if [ "$PLAY_TAG" == "HEAD" ]; then
+  git checkout $PLAY_BRANCH
+  /usr/bin/ant -buildfile $PLAY_HOME/framework/build.xml
+else
+  git checkout $PLAY_TAG
+  /usr/bin/ant -buildfile $PLAY_HOME/framework/build.xml -Dversion=$PLAY_TAG
+fi
+
+git checkout $PLAY_BRANCH
 
 # Clean old tarball
+cd $BUILD_DIR
 rm -fr build/play-heroku.tar.gz
 
 # Create tmp space for tar'ing
@@ -18,12 +32,15 @@ cp -r $PLAY_HOME/framework/src/play/version tmp/.play/framework/src/play
 cp -r $PLAY_HOME/framework/templates/       tmp/.play/framework
 
 # Add Play! core modules (minus testrunner)
-cp -r $PLAY_HOME/modules            tmp/.play
-rm -fr tmp/.play/modules/testrunner
+mkdir -p tmp/.play/modules
+cp -r $PLAY_HOME/modules/console   tmp/.play/modules
+cp -r $PLAY_HOME/modules/crud      tmp/.play/modules
+cp -r $PLAY_HOME/modules/docviewer tmp/.play/modules
+cp -r $PLAY_HOME/modules/grizzly   tmp/.play/modules
+cp -r $PLAY_HOME/modules/secure    tmp/.play/modules
 
 # Add Play! Linux executable
-cp -r $PLAY_HOME/play               tmp/.play
-
+cp -r $PLAY_HOME/play              tmp/.play
 
 # Run tar and remove tmp space
 if [ ! -d build ]; then
