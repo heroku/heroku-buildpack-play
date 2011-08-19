@@ -70,6 +70,11 @@ for DIR in $PLAY_PATH $IVY_PATH ; do
   cp -r $DIR $CACHE_DIR/$DIR
 done
 
+# Remove build time dependencies from slug
+# (Note: runtime modules are copied to slug with --forceCopy option)
+rm -fr $PLAY_PATH/modules
+rm -fr $IVY_PATH
+
 # Warn if no Procfile is present
 if [ ! -f Procfile ]; then
   echo "-----> No Procfile found. Will use process: "

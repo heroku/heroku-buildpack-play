@@ -32,16 +32,11 @@ cp -r $PLAY_BUILD_DIR/framework/pym/             tmp/.play/framework
 cp -r $PLAY_BUILD_DIR/framework/src/play/version tmp/.play/framework/src/play
 cp -r $PLAY_BUILD_DIR/framework/templates/       tmp/.play/framework
 
-# Add Play! core modules (minus testrunner)
-mkdir -p tmp/.play/modules
-cp -r $PLAY_BUILD_DIR/modules/console   tmp/.play/modules
-cp -r $PLAY_BUILD_DIR/modules/crud      tmp/.play/modules
-cp -r $PLAY_BUILD_DIR/modules/docviewer tmp/.play/modules
-cp -r $PLAY_BUILD_DIR/modules/grizzly   tmp/.play/modules
-cp -r $PLAY_BUILD_DIR/modules/secure    tmp/.play/modules
+# Add Play! core modules
+cp -r $PLAY_HOME/modules    tmp/.play
 
 # Add Play! Linux executable
-cp -r $PLAY_BUILD_DIR/play              tmp/.play
+cp -r $PLAY_BUILD_DIR/play  tmp/.play
 
 # Run tar and remove tmp space
 if [ ! -d build ]; then
