@@ -31,7 +31,7 @@ check_compile_status()
 
 # Install Play! if not already
 if [ ! -d $PLAY_PATH ]; then
-  PLAY_URL="https://s3-us-west-1.amazonaws.com/language-pack-play/play-heroku.tar.gz"
+  PLAY_URL="https://s3.amazonaws.com/play-heroku/play-heroku.tar.gz"
 
   echo -n "-----> Installing Play!....."
   curl --silent --max-time 150 --location $PLAY_URL | tar xz
