@@ -8,7 +8,7 @@ cat <<EOF
 config_vars:
   PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
   JAVA_OPTS: -Xmx384m
-  PLAY_OPTS: --%prod -DusePrecompiled=true
+  PLAY_OPTS: --%prod -Dprecompiled=true
 EOF
 
 if [ ! -f $BUILD_DIR/Procfile ]; then
