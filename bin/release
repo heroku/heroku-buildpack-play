@@ -9,6 +9,8 @@ config_vars:
   PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
   JAVA_OPTS: -Xmx384m
   PLAY_OPTS: --%prod -Dprecompiled=true
+addons:
+  shared-database:5mb
 EOF
 
 if [ ! -f $BUILD_DIR/Procfile ]; then
