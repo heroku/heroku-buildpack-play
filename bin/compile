@@ -78,5 +78,5 @@ rm -fr $IVY_PATH
 # Warn if no Procfile is present
 if [ ! -f Procfile ]; then
   echo "-----> No Procfile found. Will use process: "
-  echo "       play run --http.port=\$PORT"
+  echo "       play run --http.port=\$PORT \$PLAY_OPTS"
 fi
