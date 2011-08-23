@@ -1,21 +1,34 @@
 #!/usr/bin/env bash
 
 BUILD_DIR=$PWD
-PLAY_BUILD_DIR=~/release/play
-PLAY_BRANCH=1.2.x
-PLAY_TAG=HEAD
+
+PLAY_FILE=$1
+
+# We specified a release zip
+if [[ -n $PLAY_FILE && -f $PLAY_FILE ]]; then
+  mkdir -p unzipped/
+  unzip $PLAY_FILE -d unzipped/
+
+  PLAY_BUILD_DIR=$(find -name 'framework' -type d | sed 's/framework//')
 
 # Build Play! framework
-cd $PLAY_BUILD_DIR
-if [ "$PLAY_TAG" == "HEAD" ]; then
-  git checkout $PLAY_BRANCH
-  /usr/bin/ant -buildfile $PLAY_BUILD_DIR/framework/build.xml
 else
-  git checkout $PLAY_TAG
-  /usr/bin/ant -buildfile $PLAY_BUILD_DIR/framework/build.xml -Dversion=$PLAY_TAG
+  PLAY_BUILD_DIR=~/release/play
+  PLAY_BRANCH=1.2.x
+  PLAY_TAG=HEAD
+
+  cd $PLAY_BUILD_DIR
+  if [ "$PLAY_TAG" == "HEAD" ]; then
+    git checkout $PLAY_BRANCH
+    /usr/bin/ant -buildfile $PLAY_BUILD_DIR/framework/build.xml
+  else
+    git checkout $PLAY_TAG
+    /usr/bin/ant -buildfile $PLAY_BUILD_DIR/framework/build.xml -Dversion=$PLAY_TAG
+  fi
+
+  git checkout $PLAY_BRANCH
 fi
 
-git checkout $PLAY_BRANCH
 
 # Clean old tarball
 cd $BUILD_DIR
@@ -27,13 +40,13 @@ mkdir -p tmp/.play/framework/src/play
 # Add Play! framework
 cp -r $PLAY_BUILD_DIR/framework/dependencies.yml tmp/.play/framework
 cp -r $PLAY_BUILD_DIR/framework/lib/             tmp/.play/framework
-cp -r $PLAY_BUILD_DIR/framework/play*.jar        tmp/.play/framework
+cp -r $PLAY_BUILD_DIR/framework/play-*.jar       tmp/.play/framework
 cp -r $PLAY_BUILD_DIR/framework/pym/             tmp/.play/framework
 cp -r $PLAY_BUILD_DIR/framework/src/play/version tmp/.play/framework/src/play
 cp -r $PLAY_BUILD_DIR/framework/templates/       tmp/.play/framework
 
 # Add Play! core modules
-cp -r $PLAY_HOME/modules    tmp/.play
+cp -r $PLAY_BUILD_DIR/modules    tmp/.play
 
 # Add Play! Linux executable
 cp -r $PLAY_BUILD_DIR/play  tmp/.play
@@ -45,3 +58,10 @@ fi
 
 tar cvzf build/play-heroku.tar.gz -C tmp/ .play
 rm -fr tmp/
+
+if [[ -n $PLAY_FILE && -f $PLAY_FILE ]]; then
+  rm -fr unzipped/
+  echo "*** BUILT FROM ZIP FILE: $PLAY_FILE"
+else
+  echo "*** BUILT FROM BRANCH $PLAY_BRANCH AT TAG $PLAY_TAG"
+fi
