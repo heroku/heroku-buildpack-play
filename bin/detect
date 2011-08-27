@@ -3,7 +3,7 @@
 
 play_confs=`cd $1; find -wholename "*/conf/application.conf" ! -wholename "*modules*" -type f`
 if [ -n "$play_confs" ]; then
-  echo "play" && exit 0
+  echo "Play!" && exit 0
 else
   echo "no" && exit 1
 fi
