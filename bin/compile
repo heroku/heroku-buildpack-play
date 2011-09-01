@@ -49,7 +49,7 @@ $PLAY_PATH/play version | sed -u 's/^/       /'
 APP_DIR=$(find -wholename "*/conf/application.conf" ! -wholename "*modules*" ! -wholename "*$PLAY_PATH*" -type f | sed 's/conf\/application.conf//')
 echo "       Play! application root found at $APP_DIR"
 
-DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forceCopy --sync --silent -Duser.home=$BUILD_DIR 2>&1"
+DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
 echo "       Resolving dependencies: $DEPENDENCIES_CMD"
 eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
 check_compile_status
