@@ -53,10 +53,9 @@ echo " done"
 echo "-----> Building Play! application..."
 $PLAY_PATH/play version | sed -u 's/^/       /'
 
-# Precompile the Play! application represented by an application.conf file
-# (Do not precompile copied modules or anything found in the Play! framework)
-APP_DIR=$(find -wholename "*/conf/application.conf" ! -wholename "*modules*" ! -wholename "*$PLAY_PATH*" -type f | sed 's/conf\/application.conf//')
-echo "       Play! application root found at $APP_DIR"
+# Precompile the Play! application at the root of $BUILD_DIR
+APP_DIR=./
+echo "       Building Play! application at directory $APP_DIR"
 
 DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
 echo "       Resolving dependencies: $DEPENDENCIES_CMD"
@@ -82,6 +81,6 @@ rm -fr $IVY_PATH
 
 # Warn if no Procfile is present
 if [ ! -f Procfile ]; then
-  echo "-----> No Procfile found. Will use process: "
+  echo "-----> No Procfile found. Will use the following default process: "
   echo "       play run --http.port=\$PORT \$PLAY_OPTS"
 fi
