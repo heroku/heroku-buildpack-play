@@ -9,7 +9,7 @@ Usage
 Example usage:
 
     $ ls
-    Procfile  pom.xml  src
+    app	conf	lib	public	test
 
     $ heroku create --stack cedar --buildpack http://github.com/heroku/heroku-buildpack-play.git
 
