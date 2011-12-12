@@ -31,9 +31,8 @@ check_compile_status()
 
 PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t]*-[ \t]*play[ \t]*([1-9\.]*).*/\1/'`
 DEFAULT_PLAY_VERSION="1.2.3"
-echo "Play version = $PLAY_VERSION"
 
-if [ "$PLAY_VERSION" == ""] ; then
+if [ -z "$PLAY_VERSION" ] ; then
   PLAY_VERSION=$DEFAULT_PLAY_VERSION
   echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used...."
 fi
@@ -41,11 +40,19 @@ fi
 # Install Play! if not already
 if [ ! -d $PLAY_PATH ]; then
   PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$PLAY_VERSION.tar.gz"
-
-  echo -n "-----> Installing Play! $PLAY_VERSION....."
-  curl --silent --max-time 150 --location $PLAY_URL -o play-heroku.tar.gz
-  tar xzf play-heroku.tar.gz
-  check_compile_status
+  PLAY_TAR_FILE="play-heroku.tar.gz"
+  echo "-----> Installing Play! $PLAY_VERSION....."
+  curl --silent --max-time 150 --location $PLAY_URL -o $PLAY_TAR_FILE
+  if [ ! -f $PLAY_TAR_FILE ]; then
+    echo "-----> Error downloading Play! framework. Please try again..."
+    exit 1  
+  fi
+  if [ -z "`file $PLAY_TAR_FILE | grep gzip`" ]; then
+    echo "-----> Error installing Play! framework or unsupported Play! framework version specified. Please review Dev Center for a list of supported versions."
+    exit 1
+  fi
+  tar xzf $PLAY_TAR_FILE
+  rm $PLAY_TAR_FILE
   chmod +x $PLAY_PATH/play
   echo " done"
 fi
