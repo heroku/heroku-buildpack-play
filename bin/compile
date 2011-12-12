@@ -29,11 +29,20 @@ check_compile_status()
   fi
 }
 
+PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t]*-[ \t]*play[ \t]*([1-9\.]*).*/\1/'`
+DEFAULT_PLAY_VERSION=1.2.3
+echo "Play version = $PLAY_VERSION"
+
+if [ $PLAY_VERSION == ""] ; then
+  PLAY_VERSION = $DEFAULT_PLAY_VERSION
+  echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used. "
+fi
+
 # Install Play! if not already
 if [ ! -d $PLAY_PATH ]; then
-  PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku.tar.gz"
+  PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$PLAY_VERSION.tar.gz"
 
-  echo -n "-----> Installing Play!....."
+  echo -n "-----> Installing Play! $PLAY_VERSION....."
   curl --silent --max-time 150 --location $PLAY_URL | tar xz
   check_compile_status
   chmod +x $PLAY_PATH/play
