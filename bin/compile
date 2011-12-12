@@ -30,7 +30,7 @@ check_compile_status()
 }
 
 PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t]*-[ \t]*play[ \t]*([1-9\.]*).*/\1/'`
-DEFAULT_PLAY_VERSION=1.2.3
+DEFAULT_PLAY_VERSION="1.2.3"
 echo "Play version = $PLAY_VERSION"
 
 if [ $PLAY_VERSION == ""] ; then
