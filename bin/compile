@@ -33,9 +33,9 @@ PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t
 DEFAULT_PLAY_VERSION="1.2.3"
 echo "Play version = $PLAY_VERSION"
 
-if [ $PLAY_VERSION == ""] ; then
+if [ "$PLAY_VERSION" == ""] ; then
   PLAY_VERSION=$DEFAULT_PLAY_VERSION
-  echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used. "
+  echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used...."
 fi
 
 # Install Play! if not already
