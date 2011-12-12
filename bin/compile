@@ -2,11 +2,16 @@
 # bin/compile <build-dir> <cache-dir>
 
 # Parse args
+BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 BUILD_DIR=$1
 CACHE_DIR=$2
 
 PLAY_PATH=".play"
 IVY_PATH=".ivy2"
+
+$BIN_DIR/dot &
+DOT=$!
+
 
 # Change dir to handle relative paths
 cd $BUILD_DIR
@@ -25,6 +30,7 @@ check_compile_status()
     echo " !     Failed to build Play! application"
     rm -rf $CACHE_DIR/$PLAY_PATH
     echo " !     Cleared Play! framework from cache"
+    kill $DOT
     exit 1
   fi
 }
@@ -84,3 +90,5 @@ if [ ! -f Procfile ]; then
   echo "-----> No Procfile found. Will use the following default process: "
   echo "       play run --http.port=\$PORT \$PLAY_OPTS"
 fi
+
+kill $DOT

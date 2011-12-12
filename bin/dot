@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+while [ 1 -gt 0 ]
+do
+ echo '.'
+ sleep 5
+done
