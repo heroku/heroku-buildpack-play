@@ -35,6 +35,17 @@ Example usage:
 
 The buildpack will detect your app as using the Play! framework if it has an `application.conf` in a `conf` directory. Your dependencies will be resolved using `play dependencies` and your app precompiled with `play precompile`. If you don't provide a Procfile the build pack will default to launching your app with `play run --%prod -Dprecompiled=true`.
 
+Play Versions
+-------------
+
+The buildpack will read the Play! version that your application expects from your dependencies.yml file. The version comes on the same line where you already declare a dependency on the Play! framework itself:
+
+    - play 1.2.4
+
+If you don't specify a version it will be defaulted for you and you'll see a warning message in your build output. It is a best practice to specify the version off the framework that you intend to use.
+
+Once your application is live you can upgrade the Play! version simply by changing the version in your dependencies.yml. If you don't specify a version and use the default version your application will not be updated when the default version is updated. This is so that you don't have to deal with your application being upgraded unexpectedly.
+
 Hacking
 -------
 
