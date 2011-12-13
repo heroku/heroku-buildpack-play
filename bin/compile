@@ -68,16 +68,9 @@ echo "       Resolving dependencies: $DEPENDENCIES_CMD"
 eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
 check_compile_status
 
-PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xmx900m -XX:+UseSerialGC -Xint"
+PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xmx900m"
 echo "       Precompiling: $PRECOMPILE_CMD" 
-#eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
-$PRECOMPILE_CMD &
-PRE=$!
-while kill -0 "$PRE"; do
-    echo "loop"
-    kill -3 "$PRE" 2>&1
-    sleep 10
-done
+eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
 check_compile_status
 
 # Repack Play! framework into cache
