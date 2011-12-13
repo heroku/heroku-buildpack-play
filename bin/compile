@@ -51,11 +51,13 @@ install_play()
 }
 
 PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t]*-[ \t]*play[ \t]*([1-9\.]*).*/\1/'`
-DEFAULT_PLAY_VERSION="1.2.3"
+DEFAULT_PLAY_VERSION="1.2.4"
+VERSION_DECLARED=true
 
 if [ -z "$PLAY_VERSION" ] ; then
   PLAY_VERSION=$DEFAULT_PLAY_VERSION
-  echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used...."
+  VERSION_DECLARED=false
+  echo "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used...."
 fi
 
 # Install Play! or update the version
@@ -63,8 +65,7 @@ if [ ! -d $PLAY_PATH ]; then
   install_play $PLAY_VERSION
 else
   INSTALLED_PLAY_VERSION=`cat $PLAY_PATH/framework/src/play/version`
-  echo "installed play version: $INSTALLED_PLAY_VERSION"
-  if [ ! "$INSTALLED_PLAY_VERSION"=="$PLAY_VERSION" ] ; then
+  if [ "$INSTALLED_PLAY_VERSION" != "$PLAY_VERSION" ] && $VERSION_DECLARED ; then
     echo "-----> Updating Play! version. Previous version was $INSTALLED_PLAY_VERSION. Updating to $PLAY_VERSION..."
     rm -rf $PLAY_PATH
     install_play $PLAY_VERSION
