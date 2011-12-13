@@ -29,23 +29,16 @@ check_compile_status()
   fi
 }
 
-PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t]*-[ \t]*play[ \t]*([1-9\.]*).*/\1/'`
-DEFAULT_PLAY_VERSION="1.2.3"
-
-if [ -z "$PLAY_VERSION" ] ; then
-  PLAY_VERSION=$DEFAULT_PLAY_VERSION
-  echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used...."
-fi
-
-# Install Play! if not already
-if [ ! -d $PLAY_PATH ]; then
-  PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$PLAY_VERSION.tar.gz"
+install_play()
+{
+  VER_TO_INSTALL=$1
+  PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$VER_TO_INSTALL.tar.gz"
   PLAY_TAR_FILE="play-heroku.tar.gz"
-  echo "-----> Installing Play! $PLAY_VERSION....."
+  echo "-----> Installing Play! $VER_TO_INSTALL....."
   curl --silent --max-time 150 --location $PLAY_URL -o $PLAY_TAR_FILE
   if [ ! -f $PLAY_TAR_FILE ]; then
     echo "-----> Error downloading Play! framework. Please try again..."
-    exit 1  
+    exit 1
   fi
   if [ -z "`file $PLAY_TAR_FILE | grep gzip`" ]; then
     echo "-----> Error installing Play! framework or unsupported Play! framework version specified. Please review Dev Center for a list of supported versions."
@@ -54,7 +47,28 @@ if [ ! -d $PLAY_PATH ]; then
   tar xzf $PLAY_TAR_FILE
   rm $PLAY_TAR_FILE
   chmod +x $PLAY_PATH/play
-  echo " done"
+  echo "-----> done"
+}
+
+PLAY_VERSION=`grep 'play[ \t]*[0-9\.]' conf/dependencies.yml | sed -E -e 's/[ \t]*-[ \t]*play[ \t]*([1-9\.]*).*/\1/'`
+DEFAULT_PLAY_VERSION="1.2.3"
+
+if [ -z "$PLAY_VERSION" ] ; then
+  PLAY_VERSION=$DEFAULT_PLAY_VERSION
+  echo -n "-----> WARNING: Play! version not specified in dependencies.yml. Default version: $PLAY_VERSION being used...."
+fi
+
+# Install Play! or update the version
+if [ ! -d $PLAY_PATH ]; then
+  install_play $PLAY_VERSION
+else
+  INSTALLED_PLAY_VERSION=`cat $PLAY_PATH/framework/src/play/version`
+  echo "installed play version: $INSTALLED_PLAY_VERSION"
+  if [ ! "$INSTALLED_PLAY_VERSION"=="$PLAY_VERSION" ] ; then
+    echo "-----> Updating Play! version. Previous version was $INSTALLED_PLAY_VERSION. Updating to $PLAY_VERSION..."
+    rm -rf $PLAY_PATH
+    install_play $PLAY_VERSION
+  fi
 fi
 
 PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.xml"
