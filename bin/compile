@@ -75,7 +75,7 @@ $PRECOMPILE_CMD &
 PRE=$!
 while kill -0 "$PRE"; do
     echo "loop"
-    kill -3 "$PRE"
+    kill -3 "$PRE" 2>&1
     sleep 10
 done
 check_compile_status
