@@ -51,6 +51,9 @@ cp -r $PLAY_BUILD_DIR/modules    tmp/.play
 # Add Play! Linux executable
 cp -r $PLAY_BUILD_DIR/play  tmp/.play
 
+# Add Resources
+cp -r $PLAY_BUILD_DIR/resources tmp/.play
+
 # Run tar and remove tmp space
 if [ ! -d build ]; then
   mkdir build
