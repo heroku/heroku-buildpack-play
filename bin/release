@@ -6,7 +6,7 @@ BUILD_DIR=$1
 cat <<EOF
 ---
 config_vars:
-  PATH: .jdk7/bin:.play:.tools:/usr/local/bin:/usr/bin:/bin
+  PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
   JAVA_OPTS: -Xmx384m
   PLAY_OPTS: --%prod -Dprecompiled=true
 addons:

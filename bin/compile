@@ -81,19 +81,6 @@ fi
 curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
 echo " done"
 
-OPENJDK7_URL="https://s3.amazonaws.com/heroku-jvm-langpack-java/openjdk7-u2-heroku-temaki.tar.gz"
-
-if [ ! -d "$BUILD_DIR/.jdk7" ]; then
-     echo -n "-----> Installing OpenJDK7u2 build (to .jdk7)....."
-     mkdir "$BUILD_DIR/.jdk7"
-     cd "$BUILD_DIR/.jdk7"
-     curl --silent --max-time 180 --location $OPENJDK7_URL | tar xz
-     echo " done"
-fi 
-
-export JAVA_HOME="$BUILD_DIR/.jdk7"
-export PATH="$BUILD_DIR/.jdk7/bin:$PATH"
-
 # Build app
 echo "-----> Building Play! application..."
 $PLAY_PATH/play version | sed -u 's/^/       /'
