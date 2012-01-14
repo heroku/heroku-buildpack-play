@@ -91,7 +91,6 @@ if [ ! -d "$BUILD_DIR/.jdk7" ]; then
      echo " done"
 fi 
 
-cd "$BUILD_DIR"
 export JAVA_HOME="$BUILD_DIR/.jdk7"
 export PATH="$BUILD_DIR/.jdk7/bin:$PATH"
 
