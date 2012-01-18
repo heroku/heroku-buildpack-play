@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
+. ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
 testDetectWithConfFileDetectsPlayApp() {
   mkdir -p ${BUILD_DIR}/play-app/conf
