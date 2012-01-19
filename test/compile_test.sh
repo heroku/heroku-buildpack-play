@@ -59,15 +59,6 @@ getPlayApp() {
   assertTrue "Expected ${BUILD_DIR}/conf/application.conf, but it's not there." "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
-createDetectablePlayApp() {
-  version=${1:-${DEFAULT_PLAY_VERSION}}
-  confFile=`cat >  <<EOF
-require:
-    - play ${version}
-EOF`
-  
-}
-
 testNewApp() {
   getPlayApp
   assertTrue "An application.conf file should have been created for a new app" "[ -f ${BUILD_DIR}/conf/application.conf ]"
