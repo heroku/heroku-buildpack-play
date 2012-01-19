@@ -70,9 +70,7 @@ EOF`
 
 testNewApp() {
   getPlayApp
-  assertTrue \
-    "An application.conf file should have been created for a new app" \
-    "[ -f ${BUILD_DIR}/conf/application.conf ]"
+  assertTrue "An application.conf file should have been created for a new app" "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
 testCacheIsCopied() {
@@ -85,12 +83,8 @@ testCacheIsCopied() {
   
   capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
   
-  assertTrue \
-    "A play file was added to the cache dir, but it is not present after compile." \
-    "[ -f ${CACHE_DIR}/.play/test-cached ]"
-  assertTrue \
-    "An ivy file was added to the cache dir, but it is not present after compile." \
-    "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
+  assertTrue "A play file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.play/test-cached ]"
+  assertTrue "An ivy file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
 }
 
 
