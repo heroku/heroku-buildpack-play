@@ -51,7 +51,7 @@ installPlay() {
 
 getPlayApp() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
-  local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}"} 
+  local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}"
   if [ ! -f ${appBaseDir}/conf/application.conf ]; then
     $(_full_play) new ${appBaseDir} --name app >/dev/null 2>&1
   fi
