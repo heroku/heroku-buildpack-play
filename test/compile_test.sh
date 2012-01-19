@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
@@ -86,5 +86,3 @@ testCacheIsCopied() {
   assertTrue "A play file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.play/test-cached ]"
   assertTrue "An ivy file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
 }
-
-
