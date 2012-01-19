@@ -20,34 +20,43 @@ DEFAULT_PLAY_VERSION=1.2.4
 
 _play() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
-  local playCommand="${PLAY_TEST_CACHE}/${playVersion}/.play/play" 
-  if [ ! -f "${playCommand}" ]; then
-    echo "playCommand: $playCommand" >&2
-    installPlay "${playVersion}"
-  fi
+  local playCommand=`$(installPlay) "${playVersion}"`
+  echo "${playCommand}"
+}
+
+_full_play() {
+  local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
+  local playBaseDir="${2:-${PLAY_TEST_CACHE}/full}"
+  local playExe="${playBaseDir}/play-${playVersion}/play"
+  local playUrl="http://download.playframework.org/releases/play-${playVersion}.zip"
+  local playCommand="$(installPlay ${playVersion} ${playBaseDir} ${playExe} ${playUrl})"
   echo "${playCommand}"
 }
 
 installPlay() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
-  local playURL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-${playVersion}.tar.gz"
-  if [ ! -f ${PLAY_TEST_CACHE}/${playVersion}/.play/play ]; then
-    mkdir -p ${PLAY_TEST_CACHE}/${playVersion}
+  local playBaseDir=${2:-${PLAY_TEST_CACHE}/${playVersion}}
+  local playExe=${3:-${playBaseDir}/.play/play}
+  local playURL=${4:-"https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-${playVersion}.tar.gz"}
+  if [ ! -f ${playExe} ]; then
+    mkdir -p ${playBaseDir}
     local currentDir="$(pwd)"
-    cd ${PLAY_TEST_CACHE}/${playVersion}
-    curl --silent --max-time 180 --location ${playURL} | tar xzf
-    chmod +x .play/play 
+    cd ${playBaseDir}
+    curl --silent --max-time 300 --location ${playURL} | tar xz
+    chmod +x ${playExe}
     cd ${currentDir}
   fi
+  echo "${playExe}"
 }
 
-createPlayApp() {
+getPlayApp() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
-  local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}" 
-  if [ ! -d ${appBaseDir} ]; then
-    $(_play) new ${appBaseDir} --name app > ./fail
+  local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}"} 
+  if [ ! -f ${appBaseDir}/conf/application.conf ]; then
+    $(_full_play) new ${appBaseDir} --name app > /dev/null
   fi
-  echo "${appBaseDir}"
+  cp -r ${appBaseDir}/. ${BUILD_DIR}
+  assertTrue "Expected ${BUILD_DIR}/conf/application.conf, but it's not there." "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
 createDetectablePlayApp() {
@@ -60,7 +69,28 @@ EOF`
 }
 
 testNewApp() {
-  local newApp="$(createPlayApp)"
-  assertEquals "${newApp}" "/tmp/play-test-cache/app-1.2.4"
-  assertTrue "An application.conf file should have been created for a new app" "[ -f ${newApp}/conf/application.conf ]"
+  getPlayApp
+  assertTrue \
+    "An application.conf file should have been created for a new app" \
+    "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
+
+testCacheIsCopied() {
+  getPlayApp
+  
+  mkdir -p ${CACHE_DIR}/.play
+  mkdir -p ${CACHE_DIR}/.ivy2
+  touch ${CACHE_DIR}/.play/test-cached
+  touch ${CACHE_DIR}/.ivy2/test-cached
+  
+  capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
+  
+  assertTrue \
+    "A play file was added to the cache dir, but it is not present after compile." \
+    "[ -f ${CACHE_DIR}/.play/test-cached ]"
+  assertTrue \
+    "An ivy file was added to the cache dir, but it is not present after compile." \
+    "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
+}
+
+
