@@ -53,7 +53,7 @@ getPlayApp() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
   local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}"} 
   if [ ! -f ${appBaseDir}/conf/application.conf ]; then
-    $(_full_play) new ${appBaseDir} --name app >/dev/null
+    $(_full_play) new ${appBaseDir} --name app >/dev/null 2>&1
   fi
   cp -r ${appBaseDir}/. ${BUILD_DIR}
   assertTrue "Expected ${BUILD_DIR}/conf/application.conf, but it's not there." "[ -f ${BUILD_DIR}/conf/application.conf ]"
