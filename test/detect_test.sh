@@ -10,6 +10,13 @@ testDetectWithConfFileDetectsPlayApp() {
   assertAppDetected "Play!"
 }
 
+testDetectWithConfFileDetectsPlayApp() {
+  mkdir -p ${BUILD_DIR}/play-app/conf/application.conf
+  detect
+  
+  assertNoAppDetected
+}
+
 testNoConfFileDoesNotDetectPlayApp() {
   mkdir -p ${BUILD_DIR}/play-app/conf
   detect

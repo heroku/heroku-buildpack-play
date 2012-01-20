@@ -2,16 +2,8 @@
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
-# test modules and ivy deps from build time are removed and not included in the slug
-
 PLAY_TEST_CACHE="/tmp/play-test-cache"
 DEFAULT_PLAY_VERSION=1.2.4
-
-_play() {
-  local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
-  local playCommand=`$(installPlay) "${playVersion}"`
-  echo "${playCommand}"
-}
 
 _full_play() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
@@ -23,11 +15,11 @@ _full_play() {
 }
 
 installPlay() {
-  local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
-  local playBaseDir=${2:-${PLAY_TEST_CACHE}/${playVersion}}
-  local playExe=${3:-${playBaseDir}/.play/play}
-  local playURL=${4:-"https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-${playVersion}.tar.gz"}
-  if [ ! -f ${playExe} ]; then
+  local playVersion=$1
+  local playBaseDir=$2
+  local playExe=$3
+  local playURL=$4
+  if [ ! -x ${playExe} ]; then
     mkdir -p ${playBaseDir}
     local currentDir="$(pwd)"
     cd ${playBaseDir}
@@ -45,7 +37,7 @@ getPlayApp() {
     $(_full_play) new ${appBaseDir} --name app
   fi
   cp -r ${appBaseDir}/. ${BUILD_DIR}
-  assertTrue "Expected ${BUILD_DIR}/conf/application.conf, but it's not there." "[ -f ${BUILD_DIR}/conf/application.conf ]"
+  assertTrue "${BUILD_DIR}/conf/application.conf should be present after creating a new app." "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
 definePlayAppVersion() {
@@ -56,9 +48,23 @@ require:
 EOF
 }
 
-testNewApp() {
+testCacheUnpacksIntoBuildDirAndPacksBackIntoCache() {
   getPlayApp
-  assertTrue "An application.conf file should have been created for a new app" "[ -f ${BUILD_DIR}/conf/application.conf ]"
+  
+  mkdir -p ${CACHE_DIR}/.play
+  mkdir -p ${CACHE_DIR}/.ivy2
+  touch ${CACHE_DIR}/.play/test-cached
+  touch ${CACHE_DIR}/.ivy2/test-cached
+  
+  assertTrue "Precondition: A play file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.play/test-cached ]"
+  assertTrue "Precondition: An ivy file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
+
+  capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
+
+  assertTrue "A play file should have been added to the build dir" "[ -f ${BUILD_DIR}/.play/test-cached ]"
+  assertFalse "Ivy files should have been removed from the build dir" "[ -d ${BUILD_DIR}/.ivy2 ]"
+  assertTrue "A play file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.play/test-cached ]"
+  assertTrue "An ivy file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
 }
 
 testBuildPhases() {
@@ -71,7 +77,7 @@ require:
 EOF
   compile
   assertTrue \
-    "Dependencies should have been resolved for guava, but they're not present after compiling." \
+    "Dependencies should have been resolved for guava." \
     "[ -f ${BUILD_DIR}/lib/guava-11.0.jar ]"
   assertTrue \
     "A precompiled app should have an Application.class" \
@@ -80,8 +86,8 @@ EOF
 
 testHerokuIvySettingsAreInstalled() {
   getPlayApp
-  capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
-  assertTrue "Ivy settings file is not installed." "[ -f ${CACHE_DIR}/.ivy2/ivysettings.xml ]"
+  compile
+  assertTrue "Ivy settings file should be installed." "[ -f ${CACHE_DIR}/.ivy2/ivysettings.xml ]"
   assertContains \
     "s3pository.heroku.com" \
     "$(cat ${CACHE_DIR}/.ivy2/ivysettings.xml)"
@@ -90,41 +96,28 @@ testHerokuIvySettingsAreInstalled() {
 testBuildTimeArtifactsAreDeleted() {
   getPlayApp
   compile
-  assertTrue \
-    "Play modules should not be present in the slug, but are still in the build dir." \
-    "[ ! -d ${BUILD_DIR}/.play/modules ]"
-  assertTrue \
-    "Ivy doesn't need to remain in the slug after deps are resolved, but are still present." \
-    "[ ! -d ${BUILD_DIR}/.ivy2 ]"
-}
-
-testCacheIsCopied() {
-  getPlayApp
-  
-  mkdir -p ${CACHE_DIR}/.play
-  mkdir -p ${CACHE_DIR}/.ivy2
-  touch ${CACHE_DIR}/.play/test-cached
-  touch ${CACHE_DIR}/.ivy2/test-cached
-  
-  capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
-  
-  assertTrue "A play file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.play/test-cached ]"
-  assertTrue "An ivy file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
+  assertFalse \
+    "Play modules should not be present in the slug." \
+    "[ -d ${BUILD_DIR}/.play/modules ]"
+  assertFalse \
+    "Ivy should not be present in the slug." \
+    "[ -d ${BUILD_DIR}/.ivy2 ]"
 }
 
 testCacheNotCopiedForFailedBuild() {
   getPlayApp
 
   rm ${BUILD_DIR}/conf/application.conf
-  mkdir -p ${CACHE_DIR}/.play/test-cached
+  mkdir -p ${CACHE_DIR}/.play
+  touch ${CACHE_DIR}/.play/test-cached
 
   compile
   
   assertTrue \
-    "Files in ${CACHE_DIR}/.play should have been cleared after a failed build, but are still present." \
+    "Files in ${CACHE_DIR}/.play should have been cleared after a failed build." \
     "[ ! -f ${CACHE_DIR}/.play/test-cached ]"
   assertTrue \
-    "${CACHE_DIR}/.play/play should have been cleared after a failed build, but is still present." \
+    "${CACHE_DIR}/.play/play should have been cleared after a failed build." \
     "[ ! -f ${CACHE_DIR}/.play/play ]"
 }
 
@@ -134,7 +127,7 @@ testProcfileWarningIsDisplayedWhenNoProcfileIsPresent() {
 
   compile
 
-  assertContains "No Procfile found. Will use the following default process" "$(cat ${STD_OUT})"
+  assertCaptured "No Procfile found. Will use the following default process"
 }
 
 testPlayVersionIsPickedUpFromDependenciesFile() {
@@ -143,27 +136,25 @@ testPlayVersionIsPickedUpFromDependenciesFile() {
 
   compile
 
-  assertNotContains "WARNING: Play! version not specified in dependencies.yml." "$(cat ${STD_OUT})"
+  assertNotCaptured "WARNING: Play! version not specified in dependencies.yml."
 }
 
 testPlayInstalledInBuildDirSlashDotPlayDir() {
   compile
-  assertTrue "Expected play to be present in ${BUILD_DIR}/.play, but it's not." "[ -f ${BUILD_DIR}/.play/play ]"
+  assertTrue "${BUILD_DIR}/.play should be present in build dir after a successful build" "[ -x ${BUILD_DIR}/.play/play ]"
 }
 
 testPlayCopiedToCacheDirForSuccessfulBuild() {
   getPlayApp
   compile
-  assertTrue "Expected play to be present in ${CACHE_DIR}/.play, but it's not." "[ -f ${CACHE_DIR}/.play/play ]"
+  assertTrue "${CACHE_DIR}/.play should be present in cache dir after a successful build." "[ -f ${CACHE_DIR}/.play/play ]"
 }
 
 testValidVersionOfPlayThatIsNotInS3Bucket() {
   getPlayApp "1.1.1"
   definePlayAppVersion "1.1.1"
   compile
-  assertContains \
-    "Error installing Play! framework or unsupported Play! framework version specified." \
-    "$(cat ${STD_OUT})"
+  assertCaptured "Error installing Play! framework or unsupported Play! framework version specified."
 }
 
 testUpgradePlayProject() {
@@ -172,8 +163,20 @@ testUpgradePlayProject() {
   compile
   definePlayAppVersion "1.2.4"
   compile
-  assertContains \
-    "Updating Play! version." \
-    "$(cat ${STD_OUT})"
+  assertCaptured "Updating Play! version."
 }
 
+testCacheIsDeletedDuringUpgrade() {
+  getPlayApp "1.2.3"
+  definePlayAppVersion "1.2.3"
+  compile
+
+  mkdir -p ${CACHE_DIR}/.play
+  touch ${CACHE_DIR}/.play/test-cached
+
+  definePlayAppVersion "1.2.4"
+  compile
+  assertFalse \
+    "${CACHE_DIR}/.play/test-cached should have been deleted during play upgrade." \
+    "[ -f ${CACHE_DIR}/.play/test-cached ]"
+}

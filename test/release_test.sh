@@ -2,9 +2,6 @@
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
-# test with procfile
-# test without procfile
-
 testReleasedYamlDoesNotIncludeDefaultProcWhenProcfileIsPresent() {
   touch ${BUILD_DIR}/Procfile
   expectedReleaseYAML=`cat <<EOF
@@ -18,7 +15,7 @@ addons:
 EOF`
 
   releaseYAML=`release`
-  assertEquals "${expectedReleaseYAML}" "$(cat ${STD_OUT})" 
+  assertCaptured "${expectedReleaseYAML}"
 }
 
 testReleasedYamlHasDefaultProcessType() {
@@ -35,5 +32,5 @@ default_process_types:
 EOF`
 
   releaseYAML=`release`
-  assertEquals "${expectedReleaseYAML}" "$(cat ${STD_OUT})" 
+  assertCaptured "${expectedReleaseYAML}"
 }
