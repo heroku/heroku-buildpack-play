@@ -17,7 +17,7 @@ _full_play() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
   local playBaseDir="${2:-${PLAY_TEST_CACHE}/full}"
   local playExe="${playBaseDir}/play-${playVersion}/play"
-  local playUrl="http://download.playframework.org/releases/play-${playVersion}.zip"
+  local playUrl="http://s3.amazonaws.com/heroku-jvm-buildpack-play-test/play-${playVersion}.tar.gz"
   local playCommand="$(installPlay ${playVersion} ${playBaseDir} ${playExe} ${playUrl})"
   echo "${playCommand}"
 }
