@@ -2,11 +2,6 @@
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
-# test cache is unpacked
-# test play version is picked up correctly in PLAY_VERSION from dependencies.yml
-# test play is installed correctly
-# test an upgrade of play version
-# test a valid version of play that isn't in S3
 # test a fake version of play
 # test ivysettings.xml is removed and our custom settings are used
 # test dependencies are correctly retrieved
@@ -59,9 +54,26 @@ getPlayApp() {
   assertTrue "Expected ${BUILD_DIR}/conf/application.conf, but it's not there." "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
+definePlayAppVersion() {
+  local playVersion=$1
+  cat > ${BUILD_DIR}/conf/dependencies.yml <<EOF
+require:
+    - play ${playVersion}
+EOF
+}
+
 testNewApp() {
   getPlayApp
   assertTrue "An application.conf file should have been created for a new app" "[ -f ${BUILD_DIR}/conf/application.conf ]"
+}
+
+testHerokuIvySettingsAreInstalled() {
+  getPlayApp
+  capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
+  assertTrue "Ivy settings file is not installed." "[ -f ${CACHE_DIR}/.ivy2/ivysettings.xml ]"
+  assertContains \
+    "s3pository.heroku.com" \
+    "$(cat ${CACHE_DIR}/.ivy2/ivysettings.xml)"
 }
 
 testCacheIsCopied() {
@@ -77,3 +89,60 @@ testCacheIsCopied() {
   assertTrue "A play file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.play/test-cached ]"
   assertTrue "An ivy file was added to the cache dir, but it is not present after compile." "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
 }
+
+testCacheNotCopiedForFailedBuild() {
+  getPlayApp
+
+  rm ${BUILD_DIR}/conf/application.conf
+  mkdir -p ${CACHE_DIR}/.play/test-cached
+
+  compile
+  
+  assertTrue \
+    "Files in ${CACHE_DIR}/.play should have been cleared after a failed build, but are still present." \
+    "[ ! -f ${CACHE_DIR}/.play/test-cached ]"
+  assertTrue \
+    "${CACHE_DIR}/.play/play should have been cleared after a failed build, but is still present." \
+    "[ ! -f ${CACHE_DIR}/.play/play ]"
+}
+
+testPlayVersionIsPickedUpFromDependenciesFile() {
+  getPlayApp "1.2.4"
+  definePlayAppVersion "1.2.4"
+
+  compile
+
+  assertNotContains "WARNING: Play! version not specified in dependencies.yml." "$(cat ${STD_OUT})"
+}
+
+testPlayInstalledInBuildDirSlashDotPlayDir() {
+  compile
+  assertTrue "Expected play to be present in ${BUILD_DIR}/.play, but it's not." "[ -f ${BUILD_DIR}/.play/play ]"
+}
+
+testPlayCopiedToCacheDirForSuccessfulBuild() {
+  getPlayApp
+  compile
+  assertTrue "Expected play to be present in ${CACHE_DIR}/.play, but it's not." "[ -f ${CACHE_DIR}/.play/play ]"
+}
+
+testValidVersionOfPlayThatIsNotInS3Bucket() {
+  getPlayApp "1.1.1"
+  definePlayAppVersion "1.1.1"
+  compile
+  assertContains \
+    "Error installing Play! framework or unsupported Play! framework version specified." \
+    "$(cat ${STD_OUT})"
+}
+
+testUpgradePlayProject() {
+  getPlayApp "1.2.3"
+  definePlayAppVersion "1.2.3"
+  compile
+  definePlayAppVersion "1.2.4"
+  compile
+  assertContains \
+    "Updating Play! version." \
+    "$(cat ${STD_OUT})"
+}
+
