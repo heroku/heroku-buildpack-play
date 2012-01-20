@@ -2,13 +2,7 @@
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
-# test a fake version of play
-# test ivysettings.xml is removed and our custom settings are used
-# test dependencies are correctly retrieved
-# test precompile phase compiles artifacts
-# test play gets put into cache after precompile
 # test modules and ivy deps from build time are removed and not included in the slug
-# test a warning is printed if no procfile is present
 
 PLAY_TEST_CACHE="/tmp/play-test-cache"
 DEFAULT_PLAY_VERSION=1.2.4
@@ -67,6 +61,23 @@ testNewApp() {
   assertTrue "An application.conf file should have been created for a new app" "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
+testBuildPhases() {
+  getPlayApp
+  assertTrue "A new app should have an Application.java" "[ -f ${BUILD_DIR}/app/controllers/Application.java ]"
+  cat > ${BUILD_DIR}/conf/dependencies.yml <<EOF
+require:
+    - play ${DEFAULT_PLAY_VERSION}
+    - com.google.guava -> guava 11.0
+EOF
+  compile
+  assertTrue \
+    "Dependencies should have been resolved for guava, but they're not present after compiling." \
+    "[ -f ${BUILD_DIR}/lib/guava-11.0.jar ]"
+  assertTrue \
+    "A precompiled app should have an Application.class" \
+    "[ -f ${BUILD_DIR}/precompiled/java/controllers/Application.class ]"
+}
+
 testHerokuIvySettingsAreInstalled() {
   getPlayApp
   capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
@@ -74,6 +85,17 @@ testHerokuIvySettingsAreInstalled() {
   assertContains \
     "s3pository.heroku.com" \
     "$(cat ${CACHE_DIR}/.ivy2/ivysettings.xml)"
+}
+
+testBuildTimeArtifactsAreDeleted() {
+  getPlayApp
+  compile
+  assertTrue \
+    "Play modules should not be present in the slug, but are still in the build dir." \
+    "[ ! -d ${BUILD_DIR}/.play/modules ]"
+  assertTrue \
+    "Ivy doesn't need to remain in the slug after deps are resolved, but are still present." \
+    "[ ! -d ${BUILD_DIR}/.ivy2 ]"
 }
 
 testCacheIsCopied() {
@@ -104,6 +126,15 @@ testCacheNotCopiedForFailedBuild() {
   assertTrue \
     "${CACHE_DIR}/.play/play should have been cleared after a failed build, but is still present." \
     "[ ! -f ${CACHE_DIR}/.play/play ]"
+}
+
+testProcfileWarningIsDisplayedWhenNoProcfileIsPresent() {
+  getPlayApp
+  assertTrue "No procfile should be present in an empty app." "[ ! -f ${BUILD_DIR}/Procfile ]"
+
+  compile
+
+  assertContains "No Procfile found. Will use the following default process" "$(cat ${STD_OUT})"
 }
 
 testPlayVersionIsPickedUpFromDependenciesFile() {
