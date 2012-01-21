@@ -32,7 +32,6 @@ check_compile_status()
 install_play()
 {
   VER_TO_INSTALL=$1
-  IS_UPGRADE=${2:-`false`}
   PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$VER_TO_INSTALL.tar.gz"
   PLAY_TAR_FILE="play-heroku.tar.gz"
   echo "-----> Installing Play! $VER_TO_INSTALL....."
@@ -44,9 +43,6 @@ install_play()
   if [ -z "`file $PLAY_TAR_FILE | grep gzip`" ]; then
     echo "-----> Error installing Play! framework or unsupported Play! framework version specified. Please review Dev Center for a list of supported versions."
     exit 1
-  fi
-  if [ ${IS_UPGRADE} ]; then
-    rm -rf .play
   fi
   tar xzf $PLAY_TAR_FILE
   rm $PLAY_TAR_FILE
@@ -72,7 +68,7 @@ else
   if [ "$INSTALLED_PLAY_VERSION" != "$PLAY_VERSION" ] && $VERSION_DECLARED ; then
     echo "-----> Updating Play! version. Previous version was $INSTALLED_PLAY_VERSION. Updating to $PLAY_VERSION..."
     rm -rf $PLAY_PATH
-    install_play $PLAY_VERSION `true`
+    install_play $PLAY_VERSION
   fi
 fi
 
