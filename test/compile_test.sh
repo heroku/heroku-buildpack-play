@@ -59,7 +59,7 @@ testCacheUnpacksIntoBuildDirAndPacksBackIntoCache() {
   assertTrue "Precondition: A play file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.play/test-cached ]"
   assertTrue "Precondition: An ivy file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
 
-  capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${CACHE_DIR}
+  compile
 
   assertTrue "A play file should have been added to the build dir" "[ -f ${BUILD_DIR}/.play/test-cached ]"
   assertFalse "Ivy files should have been removed from the build dir" "[ -d ${BUILD_DIR}/.ivy2 ]"
