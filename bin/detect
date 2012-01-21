@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # bin/use <build-dir>
 
-play_confs=`cd $1; find -wholename "*/conf/application.conf" ! -wholename "*modules*" -type f`
+play_confs=`cd $1; find . -wholename "*/conf/application.conf" ! -wholename "*modules*" -type f`
 if [ -n "$play_confs" ]; then
   echo "Play!" && exit 0
 else
