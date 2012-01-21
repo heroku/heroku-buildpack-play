@@ -61,7 +61,7 @@ if [ -z "$PLAY_VERSION" ] ; then
 fi
 
 # Install Play! or update the version
-if [ ! -d $PLAY_PATH ]; then
+if [ ! -f $PLAY_PATH/play ]; then
   install_play $PLAY_VERSION
 else
   INSTALLED_PLAY_VERSION=`cat $PLAY_PATH/framework/src/play/version`
