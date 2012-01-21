@@ -14,7 +14,7 @@ addons:
   shared-database:5mb
 EOF`
 
-  releaseYAML=`release`
+  release
   assertCaptured "${expectedReleaseYAML}"
 }
 
@@ -31,6 +31,6 @@ default_process_types:
   web:    play run --http.port=\\$PORT \\$PLAY_OPTS
 EOF`
 
-  releaseYAML=`release`
+  release
   assertCaptured "${expectedReleaseYAML}"
 }
