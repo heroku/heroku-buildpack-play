@@ -34,7 +34,7 @@ getPlayApp() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
   local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}"
   if [ ! -f ${appBaseDir}/conf/application.conf ]; then
-    $(_full_play) new ${appBaseDir} --name app
+    $(_full_play) new ${appBaseDir} --name app >/dev/null
   fi
   cp -r ${appBaseDir}/. ${BUILD_DIR}
   assertTrue "${BUILD_DIR}/conf/application.conf should be present after creating a new app." "[ -f ${BUILD_DIR}/conf/application.conf ]"
@@ -136,6 +136,7 @@ testPlayVersionIsPickedUpFromDependenciesFile() {
 
   compile
 
+  assertCaptured "Installing Play! 1.2.4"
   assertNotCaptured "WARNING: Play! version not specified in dependencies.yml."
 }
 
@@ -151,9 +152,12 @@ testPlayCopiedToCacheDirForSuccessfulBuild() {
 }
 
 testValidVersionOfPlayThatIsNotInS3Bucket() {
-  getPlayApp "1.1.1"
-  definePlayAppVersion "1.1.1"
+  getPlayApp "1.0.1"
+  definePlayAppVersion "1.0.1"
+  
   compile
+
+  assertCaptured "Installing Play! 1.0.1"
   assertCaptured "Error installing Play! framework or unsupported Play! framework version specified."
 }
 
