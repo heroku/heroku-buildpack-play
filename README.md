@@ -66,3 +66,8 @@ and then:
     $ play version
 
 and you'll see the your chosen play version printed.
+
+License
+-------
+
+Licensed under the MIT License. See LICENSE file.
