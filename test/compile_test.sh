@@ -130,6 +130,16 @@ testProcfileWarningIsDisplayedWhenNoProcfileIsPresent() {
   assertCaptured "No Procfile found. Will use the following default process"
 }
 
+testPlayRCVersion() {
+  local rc_version="1.2.5-RC3"
+  getPlayApp ${rc_version}
+  definePlayAppVersion ${rc_version}
+
+  compile
+
+  assertCaptured "Installing Play! ${rc_version}"
+}
+
 testPlayVersionIsPickedUpFromDependenciesFile() {
   getPlayApp "1.2.4"
   definePlayAppVersion "1.2.4"
