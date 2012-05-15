@@ -9,11 +9,11 @@ get_property()
     return 0
   fi
     
-  local yaml_key=.*-.*$(echo $key | sed "s/\./\\\./g")
-  local grepped_line=$(grep -E ^$yaml_key $file)
-  local sedded_line=$(echo $grepped_line | sed -E -e "s/$yaml_key(:?[\ \t]+([A-Za-z0-9\.-]+))?.*/\1/g")
+  local yaml_key=".*-.*$(echo $key | sed 's/\./\\\./g')"
+  local grepped_line="$(grep -E ^$yaml_key $file)"
+  local sedded_line="$(echo $grepped_line | sed -E -e 's/$yaml_key(:?[\ \t]+([A-Za-z0-9\.-]+))?.*/\1/g')"
 
-  if [ "$grepped_line" == "$sedded_line" ]; then
+  if [ "$grepped_line" = "$sedded_line" ]; then
     echo ""
   else
     echo $sedded_line
