@@ -5,6 +5,14 @@
 
 EXPECTED_VERSION=0.1.5.9
 
+testGetPropertyFileMissing()
+{  
+  capture get_property missing.properties application.version
+
+  assertCapturedSuccess
+  assertCapturedEquals ""
+}
+
 testGetPropertyMissing()
 {  
   cat > ${OUTPUT_DIR}/sample.properties <<EOF
@@ -111,7 +119,7 @@ EOF
   assertCapturedEquals "-${EXPECTED_VERSION}-zAc-"
 }
 
-testGetPropertyWithNoEqualsSignNoSpaces() {
+testGetPropertyWithNoSpaces() {
   cat > ${OUTPUT_DIR}/sample.properties <<EOF
  - application.version1234
 EOF
@@ -127,6 +135,30 @@ EOF
   capture get_property ${OUTPUT_DIR}/sample.properties application.version
   assertCapturedSuccess
   assertCapturedEquals ""
+}
+
+testGetPropertyWithNoLeadingDash()
+{
+  cat > ${OUTPUT_DIR}/sample.properties <<EOF
+  application.version 1234
+EOF
+
+  capture get_property ${OUTPUT_DIR}/sample.properties application.version
+
+  assertCapturedSuccess
+  assertCapturedEquals ""
+}
+
+testGetPropertyWithNoLeadingSpaces()
+{
+  cat > ${OUTPUT_DIR}/sample.properties <<EOF
+- application.version ${EXPECTED_VERSION}    
+EOF
+
+  capture get_property ${OUTPUT_DIR}/sample.properties application.version
+
+  assertCapturedSuccess
+  assertCapturedEquals "${EXPECTED_VERSION}"
 }
 
 testGetPropertyWithSimilarNames() {
