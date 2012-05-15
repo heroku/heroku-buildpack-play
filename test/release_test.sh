@@ -8,7 +8,7 @@ testReleasedYamlDoesNotIncludeDefaultProcWhenProcfileIsPresent() {
 ---
 config_vars:
   PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
-  JAVA_OPTS: -Xmx384m
+  JAVA_OPTS: -Xmx384m -Xss512k
   PLAY_OPTS: --%prod -Dprecompiled=true
 addons:
   shared-database:5mb
@@ -23,7 +23,7 @@ testReleasedYamlHasDefaultProcessType() {
 ---
 config_vars:
   PATH: .play:.tools:/usr/local/bin:/usr/bin:/bin
-  JAVA_OPTS: -Xmx384m
+  JAVA_OPTS: -Xmx384m -Xss512k
   PLAY_OPTS: --%prod -Dprecompiled=true
 addons:
   shared-database:5mb
