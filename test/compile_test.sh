@@ -34,7 +34,7 @@ getPlayApp() {
   local playVersion=${1:-${DEFAULT_PLAY_VERSION}}
   local appBaseDir="${PLAY_TEST_CACHE}/app-${playVersion}"
   if [ ! -f ${appBaseDir}/conf/application.conf ]; then
-    $(_full_play) new ${appBaseDir} --name app >/dev/null
+    $(_full_play ${playVersion}) new ${appBaseDir} --name app >/dev/null
   fi
   cp -r ${appBaseDir}/. ${BUILD_DIR}
   assertTrue "${BUILD_DIR}/conf/application.conf should be present after creating a new app." "[ -f ${BUILD_DIR}/conf/application.conf ]"
@@ -130,6 +130,16 @@ testProcfileWarningIsDisplayedWhenNoProcfileIsPresent() {
   assertCaptured "No Procfile found. Will use the following default process"
 }
 
+testPlayRCVersion() {
+  local rc_version="1.2.5rc3"
+  getPlayApp ${rc_version}
+  definePlayAppVersion ${rc_version}
+
+  compile
+
+  assertCaptured "Installing Play! ${rc_version}"
+}
+
 testPlayVersionIsPickedUpFromDependenciesFile() {
   getPlayApp "1.2.4"
   definePlayAppVersion "1.2.4"
@@ -152,7 +162,7 @@ testPlayCopiedToCacheDirForSuccessfulBuild() {
 }
 
 testValidVersionOfPlayThatIsNotInS3Bucket() {
-  getPlayApp "1.0.1"
+  getPlayApp
   definePlayAppVersion "1.0.1"
   
   compile
