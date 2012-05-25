@@ -24,7 +24,7 @@ for DIR in $PLAY_PATH $IVY_PATH ; do
   fi
 done
 
-PLAY_VERSION=$(get_property conf/dependencies.yml 'play')
+PLAY_VERSION=$(get_property conf/dependencies.yml)
 DEFAULT_PLAY_VERSION="1.2.4"
 VERSION_DECLARED=true
 

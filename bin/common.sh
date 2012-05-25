@@ -1,23 +1,14 @@
 #!/usr/bin/env bash
 
-get_property()
+get_play_version()
 {
   local file=${1?"No file specified"}
-  local key=${2?"No key specified"}
 
   if [ ! -f $file ]; then
     return 0
   fi
-    
-  local yaml_key=".*-.*$(echo $key | sed "s/\./\\\./g")"
-  local grepped_line="$(grep -E ^$yaml_key $file)"
-  local sedded_line="$(echo $grepped_line | sed -E -e "s/$yaml_key(:?[\ \t]+([A-Za-z0-9\.-]+))?.*/\1/g")"
 
-  if [ "$grepped_line" = "$sedded_line" ]; then
-    echo ""
-  else
-    echo $sedded_line
-  fi
+  grep -P '.*-.*play[ \t]+[0-9\.]' ${file} | sed -E -e 's/[ \t]*-[ \t]*play[ \t]+([0-9A-Za-z\.]*).*/\1/'    
 }
 
 check_compile_status()
