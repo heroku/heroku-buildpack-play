@@ -50,11 +50,7 @@ PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.
 
 echo -n "-----> Installing ivysettings.xml....."
 if [ -f .ivy2/ivysettings.xml ]; then
-  rm .ivy2/ivysettings.xml 
-fi
-if [ -f $BUILD_DIR/.ivy2/ivysettings.xml ]; then
     echo -n "-----> Found custom ivysettings.xml....."
-    cp $BUILD_DIR/.ivy2/ivysettings.xml .ivy/ivysettings.xml
 else
     curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
 fi
