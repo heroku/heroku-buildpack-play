@@ -50,7 +50,7 @@ PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.
 
 echo -n "-----> Installing ivysettings.xml....."
 if [ -f .ivy2/ivysettings.xml ]; then
-    echo -n "-----> Found custom ivysettings.xml....."
+    echo "-----> Found custom ivysettings.xml....."
 else
     curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
 fi
@@ -65,7 +65,7 @@ $PLAY_PATH/play version | sed -u 's/^/       /'
 APP_DIR=./
 echo "       Building Play! application at directory $APP_DIR"
 
-DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
+DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd --forceCopy --silent -Duser.home=$BUILD_DIR --verbose 2>&1"
 echo "       Resolving dependencies: $DEPENDENCIES_CMD"
 eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
 check_compile_status
