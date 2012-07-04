@@ -71,7 +71,7 @@ APP_DIR=./
 echo "       Building Play! application at directory $APP_DIR"
 
 echo "  ---- ENVIRONMENT $ENVIRONMENT"
-if [ $ENVIRONMENT eq "development"] then
+if [ $ENVIRONMENT eq "development" ] then
     CLEAR_CACHE="--clearCache"
     echo "      Forcing clear cache"
 fi
