@@ -3,6 +3,8 @@ Heroku buildpack: Play!
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for [Play! framework](http://www.playframework.org/) apps.
 
+The only difference on this fork, is that, if present, it will use the .ivy2/ivysettings.xml file located at the root of the repository instead of the one provided by Heroku.
+
 Usage
 -----
 
