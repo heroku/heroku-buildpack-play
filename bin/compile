@@ -70,7 +70,7 @@ $PLAY_PATH/play version | sed -u 's/^/       /'
 APP_DIR=./
 echo "       Building Play! application at directory $APP_DIR"
 
-CLEAR_CACHE="--clearCache"
+CLEAR_CACHE="--clearcache"
 
 DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd $CLEAR_CACHE --forceCopy --silent --verbose -Duser.home=$BUILD_DIR 2>&1"
 echo "       Resolving dependencies: $DEPENDENCIES_CMD"
