@@ -31,3 +31,16 @@ testConfFileWithModulesDirectoryDoesNotDetectPlayApp() {
 
   assertNoAppDetected
 }
+
+testPlay20NotDetected()
+{
+  mkdir ${BUILD_DIR}/project
+  touch ${BUILD_DIR}/project/Build.scala
+  mkdir ${BUILD_DIR}/conf
+  touch ${BUILD_DIR}/conf/application.conf
+
+  detect
+
+  assertNoAppDetected
+}
+
