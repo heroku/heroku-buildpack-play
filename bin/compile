@@ -48,11 +48,20 @@ fi
 
 PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.xml"
 
-echo -n "-----> Installing ivysettings.xml....."
+echo "-----> Installing ivysettings.xml....."
 if [ -f .ivy2/ivysettings.xml ]; then
+  echo -n "  ---> Removing old ivysettings.xml..."
   rm .ivy2/ivysettings.xml 
+  echo "done"
 fi
-curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
+if [ -f conf/ivysettings.xml ]; then
+  echo -n "  ---> Installing custom ivysettings.xml..."
+  [ -d .ivy2 ] || mkdir .ivy2
+  cp conf/ivysettings.xml .ivy2/ivysettings.xml
+else
+  echo -n "  ---> Installing Heroku default ivysettings.xml..."
+  curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
+fi
 echo " done"
 
 # Build app
