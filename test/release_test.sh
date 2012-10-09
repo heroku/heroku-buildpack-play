@@ -15,7 +15,7 @@ addons:
 EOF`
 
   release
-  assertCaptured "${expectedReleaseYAML}"
+  assertCapturedEquals "${expectedReleaseYAML}"
 }
 
 testReleasedYamlHasDefaultProcessType() {
@@ -32,5 +32,5 @@ default_process_types:
 EOF`
 
   release
-  assertCaptured "${expectedReleaseYAML}"
+  assertCapturedEquals "${expectedReleaseYAML}"
 }
