@@ -10,7 +10,7 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 # source in common functions
 . $BIN_DIR/common.sh
 
-silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
+curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
 . bin/java
 
 if [ -f ${CACHE_DIR}/system.properties ] && [ ! -f ${BUILD_DIR}/system.properties ]; then
