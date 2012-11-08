@@ -10,6 +10,31 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 # source in common functions
 . $BIN_DIR/common.sh
 
+curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
+. bin/java
+
+if [ -f ${CACHE_DIR}/system.properties ] && [ ! -f ${BUILD_DIR}/system.properties ]; then
+  cp ${CACHE_DIR}/system.properties ${BUILD_DIR}/system.properties
+fi
+
+if [ ! -d $CACHE_DIR ] && [ ! -f ${BUILD_DIR}/system.properties ]; then 
+  echo "java.runtime.version=1.6" > ${BUILD_DIR}/system.properties; 
+fi
+
+#create the cache dir if it doesn't exist
+mkdir -p $CACHE_DIR
+
+# install JDK 
+if [ -f ${BUILD_DIR}/system.properties ]; then
+  logger -p user.notice -t "slugc[$$]" "language_pack_java download_jdk"
+  LOGGER_FLAGS="$LOGGER_FLAGS download_jdk"
+  javaVersion=$(detect_java_version ${BUILD_DIR})
+  echo -n "-----> Installing OpenJDK ${javaVersion}..."
+  install_java ${BUILD_DIR} ${javaVersion}
+  echo "done"
+  cp ${BUILD_DIR}/system.properties ${CACHE_DIR}/
+fi
+
 PLAY_PATH=".play"
 IVY_PATH=".ivy2"
 
