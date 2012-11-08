@@ -65,6 +65,16 @@ testNewAppGetsSystemPropertiesFile() {
   assertTrue "System properties file should be present in cache dir." "[ -f ${CACHE_DIR}/system.properties ]"
 }
 
+testSystemPropertiesInCacheDirGetsCopied() {
+  newPlayApp "${BUILD_DIR}"
+  echo "java.runtime.version=1.6" > ${CACHE_DIR}/system.properties
+  compile
+  assertCapturedSuccess
+  assertCaptured "Installing OpenJDK"
+  assertTrue "System properties file should be present in build dir." "[ -f ${BUILD_DIR}/system.properties ]"
+  assertTrue "System properties file should be present in cache dir." "[ -f ${CACHE_DIR}/system.properties ]"
+}
+
 testCacheUnpacksIntoBuildDirAndPacksBackIntoCache() {
   getPlayApp
   
