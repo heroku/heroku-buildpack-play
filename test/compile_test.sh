@@ -40,12 +40,39 @@ getPlayApp() {
   assertTrue "${BUILD_DIR}/conf/application.conf should be present after creating a new app." "[ -f ${BUILD_DIR}/conf/application.conf ]"
 }
 
+newPlayApp() {
+  local appBaseDir="$1"
+  local playVersion=${2:-${DEFAULT_PLAY_VERSION}}
+  $(_full_play ${playVersion}) new ${appBaseDir}/.playapp --name app >/dev/null
+  cp -r ${appBaseDir}/.playapp/. ${appBaseDir}
+}
+
 definePlayAppVersion() {
   local playVersion=$1
   cat > ${BUILD_DIR}/conf/dependencies.yml <<EOF
 require:
     - play ${playVersion}
 EOF
+}
+
+testNewAppGetsSystemPropertiesFile() {
+  newPlayApp "${BUILD_DIR}"
+  rm -rf ${CACHE_DIR}
+  compile
+  assertCapturedSuccess
+  assertCaptured "Installing OpenJDK"
+  assertTrue "System properties file should be present in build dir." "[ -f ${BUILD_DIR}/system.properties ]"
+  assertTrue "System properties file should be present in cache dir." "[ -f ${CACHE_DIR}/system.properties ]"
+}
+
+testSystemPropertiesInCacheDirGetsCopied() {
+  newPlayApp "${BUILD_DIR}"
+  echo "java.runtime.version=1.6" > ${CACHE_DIR}/system.properties
+  compile
+  assertCapturedSuccess
+  assertCaptured "Installing OpenJDK"
+  assertTrue "System properties file should be present in build dir." "[ -f ${BUILD_DIR}/system.properties ]"
+  assertTrue "System properties file should be present in cache dir." "[ -f ${CACHE_DIR}/system.properties ]"
 }
 
 testCacheUnpacksIntoBuildDirAndPacksBackIntoCache() {
@@ -194,3 +221,4 @@ testCacheIsDeletedDuringUpgrade() {
     "${CACHE_DIR}/.play/test-cached should have been deleted during play upgrade." \
     "[ -f ${CACHE_DIR}/.play/test-cached ]"
 }
+
