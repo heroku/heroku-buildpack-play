@@ -62,7 +62,6 @@ testNewAppGetsSystemPropertiesFile() {
   assertCapturedSuccess
   assertCaptured "Installing OpenJDK"
   assertTrue "System properties file should be present in build dir." "[ -f ${BUILD_DIR}/system.properties ]"
-  assertTrue "System properties file should be present in cache dir." "[ -f ${CACHE_DIR}/system.properties ]"
 }
 
 testSystemPropertiesInCacheDirGetsCopied() {
