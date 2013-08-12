@@ -43,7 +43,7 @@ for DIR in $PLAY_PATH $IVY_PATH ; do
 done
 
 PLAY_VERSION=$(get_play_version conf/dependencies.yml)
-DEFAULT_PLAY_VERSION="1.2.4"
+DEFAULT_PLAY_VERSION="1.2.6"
 VERSION_DECLARED=true
 
 if [ -z "$PLAY_VERSION" ] ; then
