@@ -5,7 +5,7 @@ BUILD_DIR=$1
 
 play_confs=$(cd $BUILD_DIR; find . -wholename "*/conf/application.conf" ! -wholename "*modules*" -type f)
 
-if [ -n "$play_confs" ] && [ ! -f "$BUILD_DIR/project/Build.scala" ]; then
+if [ -n "$play_confs" ] && [ ! -f "$BUILD_DIR/project/Build.scala" ] && [ ! -f "$BUILD_DIR/build.sbt" ]; then
   echo "Play!" && exit 0
 else
   echo "no" && exit 1
