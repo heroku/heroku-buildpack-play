@@ -44,3 +44,14 @@ testPlay20NotDetected()
   assertNoAppDetected
 }
 
+testPlay22NotDetected()
+{
+  touch ${BUILD_DIR}/build.sbt
+  mkdir ${BUILD_DIR}/conf
+  touch ${BUILD_DIR}/conf/application.conf
+
+  detect
+
+  assertNoAppDetected
+}
+
