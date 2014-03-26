@@ -57,16 +57,17 @@ if [ -z "$PLAY_VERSION" ] ; then
 fi
 
 # Install Play! or update the version
-if [ ! -f $PLAY_PATH/play ]; then
-  install_play $PLAY_VERSION
-else
-  INSTALLED_PLAY_VERSION=`cat $PLAY_PATH/framework/src/play/version`
-  if [ "$INSTALLED_PLAY_VERSION" != "$PLAY_VERSION" ] && $VERSION_DECLARED ; then
-    echo "-----> Updating Play! version. Previous version was $INSTALLED_PLAY_VERSION. Updating to $PLAY_VERSION..."
-    rm -rf $PLAY_PATH
-    install_play $PLAY_VERSION
-  fi
-fi
+#if [ ! -f $PLAY_PATH/play ]; then
+#  install_play $PLAY_VERSION
+#else
+#  INSTALLED_PLAY_VERSION=`cat $PLAY_PATH/framework/src/play/version`
+#  if [ "$INSTALLED_PLAY_VERSION" != "$PLAY_VERSION" ] && $VERSION_DECLARED ; then
+#    echo "-----> Updating Play! version. Previous version was $INSTALLED_PLAY_VERSION. Updating to $PLAY_VERSION..."
+#    rm -rf $PLAY_PATH
+#    install_play $PLAY_VERSION
+#  fi
+#fi
+install_play $PLAY_VERSION
 
 PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.xml"
 
