@@ -7,7 +7,6 @@ testReleasedYamlDoesNotIncludeDefaultProcWhenProcfileIsPresent() {
   expectedReleaseYAML=`cat <<EOF
 ---
 config_vars:
-  PATH: .play:.jdk/bin:.tools:/usr/local/bin:/usr/bin:/bin
   JAVA_OPTS: -Xmx384m -Xss512k -XX:+UseCompressedOops
   PLAY_OPTS: --%prod -Dprecompiled=true
 addons:
@@ -22,7 +21,6 @@ testReleasedYamlHasDefaultProcessType() {
   expectedReleaseYAML=`cat <<EOF
 ---
 config_vars:
-  PATH: .play:.jdk/bin:.tools:/usr/local/bin:/usr/bin:/bin
   JAVA_OPTS: -Xmx384m -Xss512k -XX:+UseCompressedOops
   PLAY_OPTS: --%prod -Dprecompiled=true
 addons:
