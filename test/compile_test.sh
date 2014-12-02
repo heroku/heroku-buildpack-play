@@ -61,7 +61,6 @@ testNewAppGetsSystemPropertiesFile() {
   compile
   assertCapturedSuccess
   assertCaptured "Installing OpenJDK"
-  assertTrue "System properties file should be present in build dir." "[ -f ${BUILD_DIR}/system.properties ]"
 }
 
 testSystemPropertiesInCacheDirGetsCopied() {
@@ -76,12 +75,12 @@ testSystemPropertiesInCacheDirGetsCopied() {
 
 testCacheUnpacksIntoBuildDirAndPacksBackIntoCache() {
   getPlayApp
-  
+
   mkdir -p ${CACHE_DIR}/.play
   mkdir -p ${CACHE_DIR}/.ivy2
   touch ${CACHE_DIR}/.play/test-cached
   touch ${CACHE_DIR}/.ivy2/test-cached
-  
+
   assertTrue "Precondition: A play file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.play/test-cached ]"
   assertTrue "Precondition: An ivy file should have been added to the cache dir" "[ -f ${CACHE_DIR}/.ivy2/test-cached ]"
 
@@ -138,7 +137,7 @@ testCacheNotCopiedForFailedBuild() {
   touch ${CACHE_DIR}/.play/test-cached
 
   compile
-  
+
   assertTrue \
     "Files in ${CACHE_DIR}/.play should have been cleared after a failed build." \
     "[ ! -f ${CACHE_DIR}/.play/test-cached ]"
@@ -190,7 +189,7 @@ testPlayCopiedToCacheDirForSuccessfulBuild() {
 testValidVersionOfPlayThatIsNotInS3Bucket() {
   getPlayApp
   definePlayAppVersion "1.0.1"
-  
+
   compile
 
   assertCaptured "Installing Play! 1.0.1"
@@ -220,4 +219,3 @@ testCacheIsDeletedDuringUpgrade() {
     "${CACHE_DIR}/.play/test-cached should have been deleted during play upgrade." \
     "[ -f ${CACHE_DIR}/.play/test-cached ]"
 }
-
