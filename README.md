@@ -3,7 +3,7 @@ Heroku buildpack: Play!
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for [Play! framework](http://www.playframework.org/) apps.
 
-*Note: This buildpack only applies to Play 1.2.x apps. Play 2.0.x apps are handled by the [Scala buildpack](https://github.com/heroku/heroku-buildpack-scala)*
+*Note: This buildpack only applies to Play 1.2.x apps. Play 2.x apps are handled by the [Scala buildpack](https://github.com/heroku/heroku-buildpack-scala)*
 
 Usage
 -----
