@@ -48,6 +48,14 @@ for DIR in $PLAY_PATH $IVY_PATH ; do
   fi
 done
 
+# Install the custom Ivy settings
+if [ -d ${IVY_PATH}-overlay ]; then
+  echo -n "-----> Installing custom Ivy files..."
+  mkdir -p ${IVY_PATH}
+  mv ${IVY_PATH}-overlay/* ${IVY_PATH}
+  echo " done"
+fi
+
 PLAY_VERSION=$(get_play_version conf/dependencies.yml)
 DEFAULT_PLAY_VERSION="1.2.7"
 VERSION_DECLARED=true

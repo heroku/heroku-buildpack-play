@@ -109,6 +109,27 @@ EOF
     "[ -f ${BUILD_DIR}/precompiled/java/controllers/Application.class ]"
 }
 
+testCustomIvySettingsAreInstalled() {
+  getPlayApp
+
+  mkdir -p ${BUILD_DIR}/.ivy2-overlay
+  cat > ${BUILD_DIR}/.ivy2-overlay/ivysettings.xml <<EOF
+<ivysettings>
+  <settings defaultResolver="s3pository"/>
+  <resolvers>
+    <ibiblio name="s3pository" root="http://s3pository.heroku.com/maven-central/" m2compatible="true" />
+  </resolvers>
+</ivysettings>
+EOF
+
+  compile
+  assertCaptured "Installing custom Ivy files"
+  assertTrue "Ivy settings file should be installed." "[ -f ${CACHE_DIR}/.ivy2/ivysettings.xml ]"
+  assertContains \
+    "s3pository.heroku.com" \
+    "$(cat ${CACHE_DIR}/.ivy2/ivysettings.xml)"
+}
+
 testBuildTimeArtifactsAreDeleted() {
   getPlayApp
   compile
