@@ -109,15 +109,6 @@ EOF
     "[ -f ${BUILD_DIR}/precompiled/java/controllers/Application.class ]"
 }
 
-testHerokuIvySettingsAreInstalled() {
-  getPlayApp
-  compile
-  assertTrue "Ivy settings file should be installed." "[ -f ${CACHE_DIR}/.ivy2/ivysettings.xml ]"
-  assertContains \
-    "s3pository.heroku.com" \
-    "$(cat ${CACHE_DIR}/.ivy2/ivysettings.xml)"
-}
-
 testBuildTimeArtifactsAreDeleted() {
   getPlayApp
   compile
