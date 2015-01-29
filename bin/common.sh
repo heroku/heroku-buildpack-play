@@ -49,7 +49,7 @@ install_play()
     echo "-----> Error installing Play! framework or unsupported Play! framework version specified. Please review Dev Center for a list of supported versions."
     exit 1
   fi
-  tar xzf $PLAY_TAR_FILE
+  tar xzmf $PLAY_TAR_FILE
   rm $PLAY_TAR_FILE
   chmod +x $PLAY_PATH/play
   echo "-----> done"
