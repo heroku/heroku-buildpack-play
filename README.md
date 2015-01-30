@@ -3,7 +3,7 @@ Heroku buildpack: Play!
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for [Play! framework](http://www.playframework.org/) apps.
 
-*Note: This buildpack only applies to Play 1.2.x apps. Play 2.x apps are handled by the [Scala buildpack](https://github.com/heroku/heroku-buildpack-scala)*
+*Note: This buildpack only applies to Play 1.2.x and 1.3.x apps. Play 2.x apps are handled by the [Scala buildpack](https://github.com/heroku/heroku-buildpack-scala)*
 
 Usage
 -----
@@ -13,7 +13,7 @@ Example usage:
     $ ls
     app	conf	lib	public	test
 
-    $ heroku create --stack cedar --buildpack http://github.com/heroku/heroku-buildpack-play.git
+    $ heroku create
 
     $ git push heroku master
     ...
@@ -29,9 +29,9 @@ Example usage:
            ~ |  __/|_|\____|\__ (_)
            ~ |_|            |__/
            ~
-           ~ play! 1.2.3, http://www.playframework.org
+           ~ play! 1.3.0, http://www.playframework.org
            ~
-           1.2.3
+           1.3.0
            Building Play! application at directory ./
     ...
 
@@ -42,7 +42,7 @@ Play Versions
 
 The buildpack will read the Play! version that your application expects from your dependencies.yml file. The version comes on the same line where you already declare a dependency on the Play! framework itself:
 
-    - play 1.2.4
+    - play 1.2.7
 
 If you don't specify a version it will be defaulted for you and you'll see a warning message in your build output. It is a best practice to specify the version off the framework that you intend to use.
 
