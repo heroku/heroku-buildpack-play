@@ -134,17 +134,17 @@ chmod +x $BUILD_DIR/vendor/node/bin/*
 PATH=$PATH:$BUILD_DIR/vendor/node/bin
 
 # Run subsequent node/npm commands from the build path
-cd $BUILD_DIR
+cd $BUILD_DIR/client
 
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
-if test -d $BUILD_DIR/node_modules; then
+if test -d $BUILD_DIR/client/node_modules; then
   status "Found existing node_modules directory; skipping cache"
   status "Rebuilding any native dependencies"
   npm rebuild 2>&1 | indent
 elif test -d $CACHE_DIR/node/node_modules; then
   status "Restoring node_modules directory from cache"
-  cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/
+  cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
 
   status "Pruning cached dependencies not specified in package.json"
   npm prune 2>&1 | indent
@@ -164,7 +164,7 @@ fi
 
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
-  npm install --userconfig $BUILD_DIR/.npmrc --production 2>&1 | indent
+  npm install --production 2>&1 | indent
 )
 
 # Purge node-related cached content, being careful not to purge the top-level
@@ -174,35 +174,27 @@ rm -rf $CACHE_DIR/node
 mkdir -p $CACHE_DIR/node
 
 # If app has a node_modules directory, cache it.
-if test -d $BUILD_DIR/node_modules; then
+if test -d $BUILD_DIR/client/node_modules; then
   status "Caching node_modules directory for future builds"
-  cp -r $BUILD_DIR/node_modules $CACHE_DIR/node
+  cp -r $BUILD_DIR/client/node_modules $CACHE_DIR/node
 fi
 
 # Copy goodies to the cache
-cp -r $BUILD_DIR/.heroku $CACHE_DIR/node
+cp -r $BUILD_DIR/client/.heroku $CACHE_DIR/node
 
 status "Cleaning up node-gyp and npm artifacts"
-rm -rf "$BUILD_DIR/.node-gyp"
-rm -rf "$BUILD_DIR/.npm"
+rm -rf "$BUILD_DIR/client/.node-gyp"
+rm -rf "$BUILD_DIR/client/.npm"
 
 # Update the PATH
 status "Building runtime environment"
-mkdir -p $BUILD_DIR/.profile.d
-echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $BUILD_DIR/.profile.d/nodejs.sh
+mkdir -p $BUILD_DIR/client/.profile.d
+echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $BUILD_DIR/client/.profile.d/nodejs.sh
 
 # Check and run gulp
 (
   if [ -f $BUILD_DIR/client/gulpfile.js ]; then
-    # get the env vars
-    if [ -d "$ENV_DIR" ]; then
-      status "Exporting config vars to environment"
-      export_env_dir $ENV_DIR
-    fi
-
     # Install gulp locally
-    cd client
-    npm install 
     status "Found gulpfile, running gulp prod task"
     $BUILD_DIR/client/node_modules/.bin/gulp prod 
   else
