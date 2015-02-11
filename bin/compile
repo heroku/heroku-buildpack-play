@@ -193,6 +193,11 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
 
 # Check and run gulp
 (
+  if [ -d "$ENV_DIR" ]; then
+    status "Exporting config vars to environment"
+    export_env_dir $ENV_DIR
+  fi
+
   if [ -f $BUILD_DIR/client/gulpfile.js ]; then
     # Install gulp locally
     status "Found gulpfile, running gulp prod task"
