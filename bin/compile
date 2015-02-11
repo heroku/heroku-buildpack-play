@@ -15,7 +15,7 @@ curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack
 . bin/util
 . bin/java
 
-export_ENV_DIR $ENV_DIR
+export_env_dir $ENV_DIR
 
 #create the cache dir if it doesn't exist
 mkdir -p $CACHE_DIR
@@ -159,7 +159,7 @@ fi
 (
   if [ -d "$ENV_DIR" ]; then
     status "Exporting config vars to environment"
-    export_ENV_DIR $ENV_DIR
+    export_env_dir $ENV_DIR
   fi
 
   status "Installing dependencies"
@@ -198,7 +198,7 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     # get the env vars
     if [ -d "$ENV_DIR" ]; then
       status "Exporting config vars to environment"
-      export_ENV_DIR $ENV_DIR
+      export_env_dir $ENV_DIR
     fi
 
     # Install gulp locally
