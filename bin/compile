@@ -201,10 +201,10 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     fi
 
     # Install gulp locally
-    npm install gulp
-    status "Found gulpfile, running gulp prod task"
     cd client
-    $BUILD_DIR/node_modules/.bin/gulp prod 
+    npm install 
+    status "Found gulpfile, running gulp prod task"
+    $BUILD_DIR/client/node_modules/.bin/gulp prod 
   else
     status "No gulpfile found"
   fi
