@@ -164,7 +164,7 @@ fi
 
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
-  npm install --production 2>&1 | indent
+  npm install 2>&1 | indent
 )
 
 # Purge node-related cached content, being careful not to purge the top-level
@@ -199,7 +199,6 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
   fi
 
   if [ -f $BUILD_DIR/client/gulpfile.js ]; then
-    # Install gulp locally
     status "Found gulpfile, running gulp prod task"
     $BUILD_DIR/client/node_modules/.bin/gulp prod 
   else
