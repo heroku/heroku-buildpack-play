@@ -205,4 +205,3 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     status "No gulpfile found"
   fi
 )
-
