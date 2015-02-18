@@ -77,47 +77,11 @@ fi
 curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
 echo " done"
 
-# Build app
-echo "-----> Building Play! application..."
-$PLAY_PATH/play version | sed -u 's/^/       /'
 
-# Precompile the Play! application at the root of $BUILD_DIR
-APP_DIR=./
-echo "       Building Play! application at directory $APP_DIR"
-
-DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
-echo "       Resolving dependencies: $DEPENDENCIES_CMD"
-eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
-check_compile_status
-
-PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR --silent 2>&1"
-echo "       Precompiling: $PRECOMPILE_CMD" 
-eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
-check_compile_status
-
-# Repack Play! framework into cache
-mkdir -p $CACHE_DIR
-for DIR in $PLAY_PATH $IVY_PATH ; do
-  rm -rf $CACHE_DIR/$DIR
-  cp -r $DIR $CACHE_DIR/$DIR
-done
-
-PROFILE_PATH="$BUILD_DIR/.profile.d/play.sh"
-mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="/app/.jdk/bin:$PATH"' >> $PROFILE_PATH
-
-# Remove build time dependencies from slug
-# (Note: runtime modules are copied to slug with --forceCopy option)
-rm -fr $PLAY_PATH/modules
-rm -fr $IVY_PATH
-
-# Warn if no Procfile is present
-if [ ! -f Procfile ]; then
-  echo "-----> No Procfile found. Will use the following default process: "
-  echo "       play run --http.port=\$PORT \$PLAY_OPTS"
-fi
 
 # ---------- GULP SHITZ --------------
+
+echo -n "-----> Installing node/npm and running gulp....."
 
 # Resolve node version using semver.io
 node_version=$(curl --silent --get https://semver.io/node/stable)
@@ -205,3 +169,45 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     status "No gulpfile found"
   fi
 )
+
+cd $BUILD_DIR
+
+# Build app
+echo "-----> Building Play! application..."
+$PLAY_PATH/play version | sed -u 's/^/       /'
+
+# Precompile the Play! application at the root of $BUILD_DIR
+APP_DIR=./
+echo "       Building Play! application at directory $APP_DIR"
+
+DEPENDENCIES_CMD="$PLAY_PATH/play dependencies $APP_DIR --forProd --forceCopy --silent -Duser.home=$BUILD_DIR 2>&1"
+echo "       Resolving dependencies: $DEPENDENCIES_CMD"
+eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
+check_compile_status
+
+PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR --silent 2>&1"
+echo "       Precompiling: $PRECOMPILE_CMD" 
+eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
+check_compile_status
+
+# Repack Play! framework into cache
+mkdir -p $CACHE_DIR
+for DIR in $PLAY_PATH $IVY_PATH ; do
+  rm -rf $CACHE_DIR/$DIR
+  cp -r $DIR $CACHE_DIR/$DIR
+done
+
+PROFILE_PATH="$BUILD_DIR/.profile.d/play.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="/app/.jdk/bin:$PATH"' >> $PROFILE_PATH
+
+# Remove build time dependencies from slug
+# (Note: runtime modules are copied to slug with --forceCopy option)
+rm -fr $PLAY_PATH/modules
+rm -fr $IVY_PATH
+
+# Warn if no Procfile is present
+if [ ! -f Procfile ]; then
+  echo "-----> No Procfile found. Will use the following default process: "
+  echo "       play run --http.port=\$PORT \$PLAY_OPTS"
+fi
