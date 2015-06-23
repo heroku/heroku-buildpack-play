@@ -57,7 +57,7 @@ if [ -d ${IVY_PATH}-overlay ]; then
 fi
 
 PLAY_VERSION=$(get_play_version conf/dependencies.yml)
-DEFAULT_PLAY_VERSION="1.3.0"
+DEFAULT_PLAY_VERSION="1.3.1"
 VERSION_DECLARED=true
 
 if [ -z "$PLAY_VERSION" ] ; then
