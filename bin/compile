@@ -128,7 +128,7 @@ fi
 
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
-  npm install --production 2>&1 | indent
+  npm install 2>&1 | indent
 )
 
 # Purge node-related cached content, being careful not to purge the top-level
