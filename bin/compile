@@ -146,9 +146,6 @@ fi
 # Copy goodies to the cache
 cp -r $BUILD_DIR/client/.heroku $CACHE_DIR/node
 
-status "Removing client directory..."
-rm -rf "$BUILD_DIR/client"
-
 # Update the PATH
 status "Building runtime environment"
 mkdir -p $BUILD_DIR/client/.profile.d
@@ -168,6 +165,9 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     status "No gulpfile found"
   fi
 )
+
+status "Removing client directory..."
+rm -rf "$BUILD_DIR/client"
 
 cd $BUILD_DIR
 
