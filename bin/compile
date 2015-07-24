@@ -170,6 +170,9 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
   fi
 )
 
+status "Removing client directory..."
+rm -rf "$BUILD_DIR/client"
+
 cd $BUILD_DIR
 
 # Build app
