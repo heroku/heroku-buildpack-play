@@ -146,6 +146,10 @@ fi
 # Copy goodies to the cache
 cp -r $BUILD_DIR/client/.heroku $CACHE_DIR/node
 
+status "Cleaning up node-gyp and npm artifacts"
+rm -rf "$BUILD_DIR/client/.node-gyp"
+rm -rf "$BUILD_DIR/client/.npm"
+
 # Update the PATH
 status "Building runtime environment"
 mkdir -p $BUILD_DIR/client/.profile.d
