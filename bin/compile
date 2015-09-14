@@ -20,12 +20,12 @@ export_env_dir $ENV_DIR
 #create the cache dir if it doesn't exist
 mkdir -p $CACHE_DIR
 
-# create default system.properties 
+# create default system.properties
 if [ ! -f ${BUILD_DIR}/system.properties ]; then
   echo "java.runtime.version=1.6" > ${BUILD_DIR}/system.properties
 fi
 
-# install JDK 
+# install JDK
 javaVersion=$(detect_java_version ${BUILD_DIR})
 echo -n "-----> Installing OpenJDK ${javaVersion}..."
 install_java ${BUILD_DIR} ${javaVersion}
@@ -68,15 +68,18 @@ else
   fi
 fi
 
-PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.xml"
-
+# Install ivysettings.xml file, with creds for Lendup's Maven repo
 echo -n "-----> Installing ivysettings.xml....."
 if [ -f .ivy2/ivysettings.xml ]; then
-  rm .ivy2/ivysettings.xml 
+  rm .ivy2/ivysettings.xml
 fi
-curl --silent --max-time 10 --location $PLAY_SETTINGS_URL --create-dirs --output .ivy2/ivysettings.xml
+mkdir -p .ivy2
+PLAY_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-play/ivysettings.xml"
+CREDS=$(echo '  <credentials host="maven.lendup.com" realm="closed site" username="${LENDUP_MAVEN_REPO_USER}" passwd="${LENDUP_MAVEN_REPO_PW}"/>' \
+  | perl -p -e 's/\$\{([^}]+)\}/defined $ENV{$1} ? $ENV{$1} : $&/eg; s/\$\{([^}]+)\}//eg')
+# NOTE: If testing on mac: brew install gnu-sed; alias sed=gsed
+curl --silent --max-time 10 --location $PLAY_SETTINGS_URL | sed "/<ivysettings>/ a ${CREDS}" > .ivy2/ivysettings.xml
 echo " done"
-
 
 
 # ---------- GULP SHITZ --------------
@@ -164,7 +167,7 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
 
   if [ -f $BUILD_DIR/client/gulpfile.js ]; then
     status "Found gulpfile, running gulp prod task"
-    $BUILD_DIR/client/node_modules/.bin/gulp prod 
+    $BUILD_DIR/client/node_modules/.bin/gulp prod
   else
     status "No gulpfile found"
   fi
@@ -189,7 +192,7 @@ eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
 check_compile_status
 
 PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR --silent 2>&1"
-echo "       Precompiling: $PRECOMPILE_CMD" 
+echo "       Precompiling: $PRECOMPILE_CMD"
 eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
 check_compile_status
 
