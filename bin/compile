@@ -124,6 +124,8 @@ elif test -d $CACHE_DIR/node/node_modules; then
     status "Node version changed since last build; rebuilding dependencies"
     npm rebuild 2>&1 | indent
   fi
+
+  npm rebuild 2>&1 | indent
 fi
 
 # Scope config var availability only to `npm install`
