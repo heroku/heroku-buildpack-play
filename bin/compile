@@ -87,7 +87,11 @@ echo " done"
 echo -n "-----> Installing node/npm and running gulp....."
 
 # Resolve node version using semver.io
-node_version=$(curl --silent --get https://semver.io/node/stable)
+#node_version=$(curl --silent --get https://semver.io/node/stable)
+# hardcode to 4.2.2 until we debug node 5
+node_version=4.2.2
+
+status "Using node.js version $node_version"
 
 # Download node from Heroku's S3 mirror of nodejs.org/dist
 status "Downloading and installing node"
