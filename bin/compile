@@ -81,7 +81,7 @@ echo " done"
 
 # ---------- GULP SHITZ --------------
 
-echo -n "-----> Installing node/npm and running gulp....."
+status "-----> Installing node/npm and running gulp....."
 
 # Resolve node version using semver.io
 #node_version=$(curl --silent --get https://semver.io/node/stable)
@@ -112,7 +112,7 @@ if test -d $BUILD_DIR/client/node_modules; then
   npm rebuild 2>&1 | indent
 elif test -d $CACHE_DIR/node/node_modules; then
   status "Restoring node_modules directory from cache"
-  cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
+#  cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
 
   status "Pruning cached dependencies not specified in package.json"
   npm prune 2>&1 | indent
