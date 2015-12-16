@@ -156,6 +156,7 @@ if test -d $BUILD_DIR/client/node_modules; then
 fi
 
 # Copy goodies to the cache
+mkdir -p $BUILD_DIR/client/.heroku
 cp -r $BUILD_DIR/client/.heroku $CACHE_DIR/node
 
 status "Cleaning up node-gyp and npm artifacts"
