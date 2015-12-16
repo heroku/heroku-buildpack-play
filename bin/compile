@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir> <env-dir>
 
+# Exit prematurely on first failure
+set -e
+
 # Parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
@@ -153,6 +156,7 @@ if test -d $BUILD_DIR/client/node_modules; then
 fi
 
 # Copy goodies to the cache
+mkdir -p $BUILD_DIR/client/.heroku
 cp -r $BUILD_DIR/client/.heroku $CACHE_DIR/node
 
 status "Cleaning up node-gyp and npm artifacts"
