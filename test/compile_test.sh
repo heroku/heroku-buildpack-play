@@ -205,7 +205,8 @@ testValidVersionOfPlayThatIsNotInS3Bucket() {
   compile
 
   assertCaptured "Installing Play! 1.0.1"
-  assertCaptured "Failed to install Play! framework or unsupported Play! framework version specified."
+  assertCaptured "Could not locate:"
+  assertCaptured "Please check that the version 1.0.1 is correct in your conf/dependencies.yml"
 }
 
 testUpgradePlayProject() {
