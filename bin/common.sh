@@ -34,23 +34,83 @@ check_compile_status()
   fi
 }
 
+download_play_official() {
+  local playVersion=${1}
+  local playTarFile=${2}
+  local playZipFile="play-${playVersion}.zip"
+  local playUrl="https://downloads.typesafe.com/play/${playVersion}/${playZipFile}"
+
+  status=$(curl --retry 3 --silent --head -w %{http_code} -L ${playUrl} -o /dev/null)
+  if [ "$status" != "200" ]; then
+    error "Could not locate: ${playUrl}
+Please check that the version ${playVersion} is correct in your conf/dependencies.yml"
+    exit 1
+  else
+    echo "Downloading ${playZipFile} from https://downloads.typesafe.com" | indent
+    curl --retry 3 -s -O -L ${playUrl}
+  fi
+
+  # create tar file
+  echo "Preparing binary package..." | indent
+  local playUnzipDir="tmp-play-unzipped/"
+  mkdir -p ${playUnzipDir}
+  unzip ${playZipFile} -d ${playUnzipDir} > /dev/null 2>&1
+
+  PLAY_BUILD_DIR=$(find -name 'framework' -type d | sed 's/framework//')
+
+  mkdir -p tmp/.play/framework/src/play
+
+  # Add Play! framework
+  cp -r $PLAY_BUILD_DIR/framework/dependencies.yml tmp/.play/framework
+  cp -r $PLAY_BUILD_DIR/framework/lib/             tmp/.play/framework
+  cp -r $PLAY_BUILD_DIR/framework/play-*.jar       tmp/.play/framework
+  cp -r $PLAY_BUILD_DIR/framework/pym/             tmp/.play/framework
+  cp -r $PLAY_BUILD_DIR/framework/src/play/version tmp/.play/framework/src/play
+  cp -r $PLAY_BUILD_DIR/framework/templates/       tmp/.play/framework
+
+  # Add Play! core modules
+  cp -r $PLAY_BUILD_DIR/modules    tmp/.play
+
+  # Add Play! Linux executable
+  cp -r $PLAY_BUILD_DIR/play  tmp/.play
+
+  # Add Resources
+  cp -r $PLAY_BUILD_DIR/resources tmp/.play
+
+  # Run tar and remove tmp space
+  if [ ! -d build ]; then
+    mkdir build
+  fi
+
+  tar cvzf ${playTarFile} -C tmp/ .play > /dev/null 2>&1
+  rm -fr tmp/
+}
+
 install_play()
 {
   VER_TO_INSTALL=$1
   PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$VER_TO_INSTALL.tar.gz"
   PLAY_TAR_FILE="play-heroku.tar.gz"
   echo "-----> Installing Play! $VER_TO_INSTALL....."
-  curl --silent --max-time 150 --location $PLAY_URL -o $PLAY_TAR_FILE
+
+  status=$(curl --retry 3 --silent --head -w %{http_code} -L ${PLAY_URL} -o /dev/null)
+  if [ "$status" != "200" ]; then
+    download_play_official ${VER_TO_INSTALL} ${PLAY_TAR_FILE}
+  else
+    curl --retry 3 -s --max-time 150 -L $PLAY_URL -o $PLAY_TAR_FILE
+  fi
+
   if [ ! -f $PLAY_TAR_FILE ]; then
     echo "-----> Error downloading Play! framework. Please try again..."
     exit 1
   fi
   if [ -z "`file $PLAY_TAR_FILE | grep gzip`" ]; then
-    echo "-----> Error installing Play! framework or unsupported Play! framework version specified. Please review Dev Center for a list of supported versions."
+    error "Failed to install Play! framework or unsupported Play! framework version specified.
+Please review Dev Center for a list of supported versions."
     exit 1
   fi
   tar xzmf $PLAY_TAR_FILE
   rm $PLAY_TAR_FILE
   chmod +x $PLAY_PATH/play
-  echo "-----> done"
+  echo "Done installing Play!" | indent
 }
