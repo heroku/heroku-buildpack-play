@@ -86,11 +86,29 @@ Please check that the version ${playVersion} is correct in your conf/dependencie
   rm -fr tmp/
 }
 
+validate_play_version() {
+  local playVersion=${1}
+
+  if [ "1.4.0" == "${playVersion}" ] || [ "1.3.2" == "${playVersion}" ]; then
+    error "Unsupported version!
+This version of Play! is incompatible with Linux. You may need to upgrade to a newer version.
+For more information see this bug report:
+https://play.lighthouseapp.com/projects/57987-play-framework/milestones/216577-141"
+  elif [[ "${playVersion}" =~ ^2.* ]]; then
+    error "Unsupported version!
+Play 2.x requires the Scala buildpack. For more information see:
+https://devcenter.heroku.com/articles/scala-support"
+  fi
+}
+
 install_play()
 {
   VER_TO_INSTALL=$1
   PLAY_URL="https://s3.amazonaws.com/heroku-jvm-langpack-play/play-heroku-$VER_TO_INSTALL.tar.gz"
   PLAY_TAR_FILE="play-heroku.tar.gz"
+
+  validate_play_version ${VER_TO_INSTALL}
+
   echo "-----> Installing Play! $VER_TO_INSTALL....."
 
   status=$(curl --retry 3 --silent --head -w %{http_code} -L ${PLAY_URL} -o /dev/null)
