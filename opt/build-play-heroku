@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#TODO: enforce parameters for switching modes
+
 BUILD_DIR=$PWD
 
 PLAY_FILE=$1
@@ -10,12 +12,16 @@ if [[ -n $PLAY_FILE && -f $PLAY_FILE ]]; then
   unzip $PLAY_FILE -d unzipped/
 
   PLAY_BUILD_DIR=$(find . -name 'framework' -type d | sed 's/framework//')
+ 
+  VERSION=`basename $PLAY_FILE .zip | awk -F'-' '{print $2}'`
 
 # Build Play! framework
 else
   PLAY_BUILD_DIR=~/release/play
   PLAY_BRANCH=1.2.x
   PLAY_TAG=HEAD
+
+  VERSION=$PLAY_BRANCH
 
   cd $PLAY_BUILD_DIR
   if [ "$PLAY_TAG" == "HEAD" ]; then
@@ -59,7 +65,8 @@ if [ ! -d build ]; then
   mkdir build
 fi
 
-tar cvzf build/play-heroku.tar.gz -C tmp/ .play
+TARGET=play-heroku-$VERSION.tar.gz
+tar cvzf build/$TARGET -C tmp/ .play
 rm -fr tmp/
 
 if [[ -n $PLAY_FILE && -f $PLAY_FILE ]]; then
@@ -68,3 +75,22 @@ if [[ -n $PLAY_FILE && -f $PLAY_FILE ]]; then
 else
   echo "*** BUILT FROM BRANCH $PLAY_BRANCH AT TAG $PLAY_TAG"
 fi
+
+
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}
+
+if [[ "no" == $(ask_yes_or_no "You are not on a non-master branch ($current_branch); are you sure you want to push?") ]]
+then
+  echo "Ok, not pushing"
+  exit 0
+fi
+
+echo "Ok, publishing to S3..."
+aws s3 cp build/$TARGET s3://lendup.packages/play/$TARGET --acl public-read
+echo "Published."
