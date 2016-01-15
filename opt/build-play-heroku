@@ -9,7 +9,7 @@ if [[ -n $PLAY_FILE && -f $PLAY_FILE ]]; then
   mkdir -p unzipped/
   unzip $PLAY_FILE -d unzipped/
 
-  PLAY_BUILD_DIR=$(find -name 'framework' -type d | sed 's/framework//')
+  PLAY_BUILD_DIR=$(find . -name 'framework' -type d | sed 's/framework//')
 
 # Build Play! framework
 else
@@ -38,21 +38,21 @@ rm -fr build/play-heroku.tar.gz
 mkdir -p tmp/.play/framework/src/play
 
 # Add Play! framework
-cp -r $PLAY_BUILD_DIR/framework/dependencies.yml tmp/.play/framework
-cp -r $PLAY_BUILD_DIR/framework/lib/             tmp/.play/framework
-cp -r $PLAY_BUILD_DIR/framework/play-*.jar       tmp/.play/framework
-cp -r $PLAY_BUILD_DIR/framework/pym/             tmp/.play/framework
-cp -r $PLAY_BUILD_DIR/framework/src/play/version tmp/.play/framework/src/play
-cp -r $PLAY_BUILD_DIR/framework/templates/       tmp/.play/framework
+cp -R $PLAY_BUILD_DIR/framework/dependencies.yml tmp/.play/framework
+cp -R $PLAY_BUILD_DIR/framework/lib              tmp/.play/framework
+cp -R $PLAY_BUILD_DIR/framework/play-*.jar       tmp/.play/framework
+cp -R $PLAY_BUILD_DIR/framework/pym              tmp/.play/framework
+cp -R $PLAY_BUILD_DIR/framework/src/play/version tmp/.play/framework/src/play
+cp -R $PLAY_BUILD_DIR/framework/templates        tmp/.play/framework
 
 # Add Play! core modules
-cp -r $PLAY_BUILD_DIR/modules    tmp/.play
+cp -R $PLAY_BUILD_DIR/modules    tmp/.play
 
 # Add Play! Linux executable
-cp -r $PLAY_BUILD_DIR/play  tmp/.play
+cp -R $PLAY_BUILD_DIR/play  tmp/.play
 
 # Add Resources
-cp -r $PLAY_BUILD_DIR/resources tmp/.play
+cp -R $PLAY_BUILD_DIR/resources tmp/.play
 
 # Run tar and remove tmp space
 if [ ! -d build ]; then
