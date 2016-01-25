@@ -118,17 +118,29 @@ if test -d $BUILD_DIR/client/node_modules; then
   npm rebuild 2>&1 | indent
 elif test -d $CACHE_DIR/node/node_modules; then
   status "Restoring node_modules directory from cache"
-#  cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
 
-  status "Pruning cached dependencies not specified in package.json"
-  npm prune 2>&1 | indent
+  # If we have a cached shrinkwrap, and it matches the current
+  # shrinkwrap, copy over the node_modules.
+  USING_CACHED_NODE=0
+  if [ -f "$CACHE_DIR/npm-shrinkwrap.json" ]; then
+    if cmp --silent "$CACHE_DIR/npm-shrinkwrap.json" npm-shrinkwrap.json; then
+        USING_CACHED_NODE=1
+        status "Using cached node_modules directory"
+        cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
+    fi
+  fi
+
+  if [ "$USING_CACHED_NODE" -eq "0" ]; then
+    status "Pruning cached dependencies not specified in package.json"
+    npm prune 2>&1 | indent
+  fi
+
+  cp npm-shrinkwrap.json "$CACHE_DIR/npm-shrinkwrap.json"
 
   if test -f $CACHE_DIR/node/.heroku/node-version && [ $(cat $CACHE_DIR/node/.heroku/node-version) != "$node_version" ]; then
     status "Node version changed since last build; rebuilding dependencies"
     npm rebuild 2>&1 | indent
   fi
-
-  npm rebuild 2>&1 | indent
 fi
 
 # Scope config var availability only to `npm install`
