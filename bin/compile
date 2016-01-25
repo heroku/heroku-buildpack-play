@@ -118,7 +118,15 @@ if test -d $BUILD_DIR/client/node_modules; then
   npm rebuild 2>&1 | indent
 elif test -d $CACHE_DIR/node/node_modules; then
   status "Restoring node_modules directory from cache"
-#  cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
+
+  # If we have a cached shrinkwrap, and it matches the current
+  # shrinkwrap, copy over the node_modules.
+  if [ -f "$CACHE_DIR/npm-shrinkwrap.json" ]; then
+    if cmp --silent "$CACHE_DIR/npm-shrinkwrap.json" npm-shrinkwrap.json; then
+        cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
+    fi
+  fi
+  cp npm-shrinkwrap.json "$CACHE_DIR/npm-shrinkwrap.json"
 
   status "Pruning cached dependencies not specified in package.json"
   npm prune 2>&1 | indent
