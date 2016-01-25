@@ -124,12 +124,12 @@ elif test -d $CACHE_DIR/node/node_modules; then
   if [ -f "$CACHE_DIR/npm-shrinkwrap.json" ]; then
     if cmp --silent "$CACHE_DIR/npm-shrinkwrap.json" npm-shrinkwrap.json; then
         cp -r $CACHE_DIR/node/node_modules $BUILD_DIR/client/
+
+        status "Pruning cached dependencies not specified in package.json"
+        npm prune 2>&1 | indent
     fi
   fi
   cp npm-shrinkwrap.json "$CACHE_DIR/npm-shrinkwrap.json"
-
-  status "Pruning cached dependencies not specified in package.json"
-  npm prune 2>&1 | indent
 
   if test -f $CACHE_DIR/node/.heroku/node-version && [ $(cat $CACHE_DIR/node/.heroku/node-version) != "$node_version" ]; then
     status "Node version changed since last build; rebuilding dependencies"
