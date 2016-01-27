@@ -9,7 +9,7 @@ config_vars:
   JAVA_OPTS: -Xmx384m -Xss512k -XX:+UseCompressedOops
   PLAY_OPTS: --%prod -Dprecompiled=true
 addons:
-  heroku-postgresql:dev
+  heroku-postgresql
 EOF
 
 if [ ! -f $BUILD_DIR/Procfile ]; then
