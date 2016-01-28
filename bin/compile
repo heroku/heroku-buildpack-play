@@ -132,15 +132,16 @@ elif test -d $CACHE_DIR/node/node_modules; then
   fi
 
   if [ "$USING_CACHED_NODE" -eq "0" ]; then
-    status "Shrinkwrap file HAS changed"
+    status "Shrinkwrap file HAS changed or doesn't exist in cache"
     status "Pruning cached dependencies not specified in package.json"
     npm prune 2>&1 | indent
+    npm rebuild 2>&1 | indent
   fi
 
   cp npm-shrinkwrap.json "$CACHE_DIR/npm-shrinkwrap.json"
 
-  if test -f $CACHE_DIR/node/.heroku/node-version && [ $(cat $CACHE_DIR/node/.heroku/node-version) != "$node_version"  && "$USING_CACHED_NODE" -eq "0" ]; then
-    status "Node version / dependencies changed since last build; rebuilding dependencies"
+  if test -f $CACHE_DIR/node/.heroku/node-version && [ $(cat $CACHE_DIR/node/.heroku/node-version) != "$node_version" ]; then
+    status "Node version changed since last build; rebuilding dependencies"
     npm rebuild 2>&1 | indent
   fi
 fi
