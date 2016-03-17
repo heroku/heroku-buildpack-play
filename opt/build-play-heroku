@@ -85,7 +85,7 @@ function ask_yes_or_no() {
     esac
 }
 
-if [[ "no" == $(ask_yes_or_no "You are not on a non-master branch ($current_branch); are you sure you want to push?") ]]
+if [[ "no" == $(ask_yes_or_no "Heroku distribution build complete. Do you want to push to S3?") ]]
 then
   echo "Ok, not pushing"
   exit 0
