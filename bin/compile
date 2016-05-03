@@ -110,6 +110,10 @@ PATH=$PATH:$BUILD_DIR/vendor/node/bin
 # Run subsequent node/npm commands from the build path
 cd $BUILD_DIR/client
 
+# Set the node environment to production. This will prevent us from installing
+# dev dependencies we do not need or want here (e.g. phantomjs).
+export NODE_ENV=production
+
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
 if test -d $BUILD_DIR/client/node_modules; then
