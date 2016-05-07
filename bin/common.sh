@@ -132,3 +132,10 @@ Please review Dev Center for a list of supported versions."
   chmod +x $PLAY_PATH/play
   echo "Done installing Play!" | indent
 }
+
+remove_play() {
+  local buildDir=${1}
+
+  rm -rf ${buildDir}/tmp-play-unzipped
+  rm -f ${buildDir}/play-*.zip
+}
