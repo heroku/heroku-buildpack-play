@@ -111,6 +111,7 @@ echo 'export PATH="/app/.play:/app/.jdk/bin:/app/.tools:$PATH"' >> $PROFILE_PATH
 # (Note: runtime modules are copied to slug with --forceCopy option)
 rm -fr $PLAY_PATH/modules
 rm -fr $IVY_PATH
+remove_play $BUILD_DIR $PLAY_VERSION
 
 # Warn if no Procfile is present
 if [ ! -f Procfile ]; then
