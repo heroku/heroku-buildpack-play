@@ -1,4 +1,4 @@
-Heroku buildpack: Play!
+Heroku buildpack: Play! [![Build Status](https://travis-ci.org/heroku/heroku-buildpack-play.svg?branch=master)](https://travis-ci.org/heroku/heroku-buildpack-play)
 =========================
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for [Play! framework](http://www.playframework.org/) apps.
