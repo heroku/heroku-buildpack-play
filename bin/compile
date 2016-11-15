@@ -233,7 +233,7 @@ check_compile_status
 
 set -x
 echo " CHECKING FOR COMPILATION... "
-ls -l precompiled
+ls -l precompiled/java
 echo " DONE CHECKING FOR COMPILATION... "
 
 wait
