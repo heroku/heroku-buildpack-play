@@ -207,7 +207,7 @@ status "Removing client directory..."
 rm -rf "$BUILD_DIR/client"
 }
 
-client_build() 2>&1 > client_build.log &
+client_build 2>&1 > client_build.log &
 
 cd $BUILD_DIR
 
