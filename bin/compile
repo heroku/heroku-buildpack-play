@@ -228,6 +228,8 @@ PRECOMPILE_ID=" --%test-unit "
 
 set +e -x
 echo " CHECKING FOR TESTS... "
+pwd
+ls -l 
 ls -l test
 echo " DONE CHECKING FOR TESTS... "
 set -e +x
