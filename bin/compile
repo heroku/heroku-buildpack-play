@@ -226,9 +226,11 @@ check_compile_status
 
 PRECOMPILE_ID=" --%test-unit "
 
+set +e -x
 echo " CHECKING FOR TESTS... "
 ls -l test
 echo " DONE CHECKING FOR TESTS... "
+set -e +x
 
 PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR --%test-unit 2>&1"
 echo "       Precompiling: $PRECOMPILE_CMD"
