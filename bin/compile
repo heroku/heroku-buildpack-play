@@ -41,14 +41,6 @@ IVY_PATH=".ivy2"
 # Change dir to handle relative paths
 cd $BUILD_DIR
 
-set +e +x
-echo " CHECKING FOR TESTS FIRST... "
-pwd
-ls -l 
-ls -l test
-echo " DONE CHECKING FOR TESTS... "
-set -e -x
-
 # Unpack cache
 for DIR in $PLAY_PATH $IVY_PATH ; do
   rm -rf $DIR
@@ -234,23 +226,10 @@ check_compile_status
 
 PRECOMPILE_ID=" --%test-unit "
 
-set +e +x
-echo " CHECKING FOR TESTS... "
-pwd
-ls -l 
-ls -l test
-echo " DONE CHECKING FOR TESTS... "
-set -e -x
-
 PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR --%test-unit 2>&1"
 echo "       Precompiling: $PRECOMPILE_CMD"
 eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
 check_compile_status
-
-set -x
-echo " CHECKING FOR COMPILATION... "
-ls -l precompiled/java test
-echo " DONE CHECKING FOR COMPILATION... "
 
 wait
 cat client_build.log
