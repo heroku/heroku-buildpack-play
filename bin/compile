@@ -234,6 +234,8 @@ check_compile_status
 wait
 cat client_build.log
 
+rm -rf test
+
 # Repack Play! framework into cache
 mkdir -p $CACHE_DIR
 for DIR in $PLAY_PATH $IVY_PATH ; do
