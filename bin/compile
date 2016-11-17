@@ -85,6 +85,7 @@ curl --silent --max-time 10 --location $PLAY_SETTINGS_URL | sed "/<ivysettings>/
 echo " done"
 
 
+function client_build {
 # ---------- GULP SHITZ --------------
 
 status "-----> Installing node/npm and running gulp....."
@@ -204,6 +205,9 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
 
 status "Removing client directory..."
 rm -rf "$BUILD_DIR/client"
+}
+
+client_build > client_build.log 2>&1 &
 
 cd $BUILD_DIR
 
@@ -220,10 +224,13 @@ echo "       Resolving dependencies: $DEPENDENCIES_CMD"
 eval "$DEPENDENCIES_CMD" | sed -u 's/^/       /'
 check_compile_status
 
-PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR --silent 2>&1"
+PRECOMPILE_CMD="$PLAY_PATH/play precompile $APP_DIR ${PRECOMPILE_ID} --silent 2>&1"
 echo "       Precompiling: $PRECOMPILE_CMD"
 eval "$PRECOMPILE_CMD" | sed -u 's/^/       /'
 check_compile_status
+
+wait
+cat client_build.log
 
 # Repack Play! framework into cache
 mkdir -p $CACHE_DIR
