@@ -46,6 +46,24 @@ status() {
   echo "-----> $*"
 }
 
+retry() {
+  local n=0
+  local try=$1
+  local cmd="${@: 2}"
+  [[ $# -le 1 ]] && {
+    echo "Usage $0 <retry_number> <Command>"
+  }
+
+  until [[ $n -ge $try ]]; do
+    $cmd && break || {
+      echo "Command Fail.."
+      ((n++))
+      echo "retry $n ::"
+      sleep 5;
+    }
+  done
+}
+
 error() {
   echo " !     $*" >&2
   exit 1
@@ -78,3 +96,4 @@ export_env_dir() {
     done
   fi
 }
+

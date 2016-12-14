@@ -196,7 +196,7 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
 
   if [ -f $BUILD_DIR/client/gulpfile.js ]; then
     status "Found gulpfile, running gulp prod task"
-    $BUILD_DIR/client/node_modules/.bin/gulp prod
+    retry 5 $BUILD_DIR/client/node_modules/.bin/gulp prod
   else
     status "No gulpfile found"
   fi
